@@ -1,0 +1,14 @@
+**/__pycache__/
+
+**/*.ipynb
+
+datasets/test/
+datasets/processed/
+datasets/processed_old/
+datasets/testsmall/
+datasets/special/
+datasets/mp/
+
+skipatom/
+special_mp_data/
+best_models/
