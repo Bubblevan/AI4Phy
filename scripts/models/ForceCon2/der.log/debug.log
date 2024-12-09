@@ -1,0 +1,10 @@
+2024-12-09 19:57:52,113 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=1, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-09 19:59:12,699 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+-4.5827e-04
+-5.6910e-06
+-3.1902e-03
+2024-12-09 19:59:12,720 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-5.4162e-03
+-7.0859e-04
+-2.1535e-03
+2024-12-09 19:59:12,808 - logger.py:50 - Train Epoch [0], Step [0/80], Loss: 1.3418, MAE: 0.2881

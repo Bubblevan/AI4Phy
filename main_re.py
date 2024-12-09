@@ -214,7 +214,7 @@ def main(args):
 
     ''' Dataset '''
     # data_source = get_Path(args.data_path+'/mp/')
-    data_source = get_Path(args.data_path+'/test/')
+    data_source = get_Path(args.data_path+'/testsmall/')
 
 
     fold_num = 10

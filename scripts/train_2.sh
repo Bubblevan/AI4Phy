@@ -12,7 +12,7 @@
 export PYTHONNOUSERSITE=True    # prevent using packages from base
 
 CUDA_VISIBLE_DEVICES=0 python -u ../main_re.py \
-    --output-dir 'models/ForceCon/der.log' \
+    --output-dir 'models/ForceCon2/der.log' \
     --model-name 'graph_attention_transformer_nonlinear_l2_e3_noNorm_dx' \
     --input-irreps '86x0e' \
     --data-path '../datasets' \
