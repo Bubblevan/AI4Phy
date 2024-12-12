@@ -8,3 +8,976 @@
 -7.0859e-04
 -2.1535e-03
 2024-12-09 19:59:12,808 - logger.py:50 - Train Epoch [0], Step [0/80], Loss: 1.3418, MAE: 0.2881
+2024-12-09 20:01:42,424 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+7.6110e-11
+-5.4033e-10
+-4.7731e-08
+2024-12-09 20:01:42,479 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+4.4742e-05
+-1.3305e-07
+-1.6158e-11
+2024-12-09 20:02:57,787 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+0.0000e+00
+0.0000e+00
+0.0000e+00
+2024-12-09 20:02:57,849 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+0.0000e+00
+-7.3688e-09
+0.0000e+00
+2024-12-09 20:04:54,057 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+-4.2689e-05
+1.5000e-03
+3.6918e-11
+2024-12-09 20:04:54,085 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+1.2138e-07
+-9.7072e-08
+7.1868e-07
+2024-12-09 20:05:50,120 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-09 20:13:15,827 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+1.7162e-04
+2.3486e-12
+0.0000e+00
+-3.2804e-04
+0.0000e+00
+2024-12-09 20:13:15,942 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+2.1855e-07
+9.2246e-08
+-1.6268e-11
+5.0500e-06
+-9.9326e-11
+2024-12-09 20:13:16,006 - logger.py:50 - Train Epoch [0], Step [0/20], Loss: 1.9307, MAE: 0.2411
+2024-12-09 20:26:02,255 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+0.0000e+00
+0.0000e+00
+-5.8304e-08
+2.5174e-12
+1.1226e-07
+2024-12-09 20:26:02,340 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-8.2858e-05
+8.6442e-03
+0.0000e+00
+-1.7832e-07
+0.0000e+00
+2024-12-09 20:44:47,434 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+-5.9956e-05
+1.2424e-10
+0.0000e+00
+-1.0366e-07
+0.0000e+00
+2024-12-09 20:44:47,519 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+1.2951e-09
+-3.6803e-07
+1.3649e-07
+-1.0041e-08
+0.0000e+00
+2024-12-09 21:11:22,237 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+3.4677e-04
+-1.0253e-13
+8.8318e-12
+0.0000e+00
+3.9956e-11
+2024-12-09 21:11:22,275 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+0.0000e+00
+-1.1614e-11
+0.0000e+00
+8.9983e-12
+-1.0424e-11
+2024-12-09 21:28:31,024 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+7.8156e-03
+0.0000e+00
+0.0000e+00
+-2.2180e-11
+1.2760e-11
+2024-12-09 21:28:31,106 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-1.7153e-07
+-9.1778e-12
+-1.5293e-11
+1.0287e-11
+8.6990e-12
+2024-12-09 21:44:45,047 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+0.0000e+00
+-2.8224e-12
+1.6317e-08
+1.9433e-04
+0.0000e+00
+2024-12-09 21:44:45,115 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+1.1560e-07
+-4.8940e-08
+0.0000e+00
+8.7069e-07
+1.2697e-11
+2024-12-09 22:07:11,545 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+7.8147e-13
+0.0000e+00
+0.0000e+00
+0.0000e+00
+0.0000e+00
+2024-12-09 22:07:11,617 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+1.8822e-09
+3.4631e-06
+1.0383e-07
+1.0502e-13
+2.3156e-08
+2024-12-09 22:35:28,674 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+0.0000e+00
+2.5555e-07
+-1.5804e-12
+1.6351e-11
+7.9477e-07
+2024-12-09 22:35:28,804 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-2.6229e-11
+-1.8701e-08
+0.0000e+00
+-7.6642e-09
+5.6593e-08
+2024-12-09 23:02:23,964 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+-3.0566e-11
+3.1155e-08
+0.0000e+00
+6.5793e-07
+0.0000e+00
+2024-12-09 23:02:24,006 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+3.2940e-10
+0.0000e+00
+1.6793e-06
+0.0000e+00
+3.5488e-10
+2024-12-09 23:14:54,864 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+0.0000e+00
+-5.2232e-11
+0.0000e+00
+0.0000e+00
+0.0000e+00
+2024-12-09 23:14:54,887 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+2.1140e-11
+-2.2480e-10
+-5.7062e-03
+0.0000e+00
+9.0249e-10
+2024-12-09 23:33:09,231 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+-3.3630e-12
+-2.0453e-09
+0.0000e+00
+-1.7741e-12
+3.5535e-12
+2024-12-09 23:33:09,265 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-1.4165e-10
+-3.6480e-04
+3.8841e-12
+7.5096e-11
+0.0000e+00
+2024-12-09 23:59:05,598 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+-6.3031e-11
+0.0000e+00
+-5.9051e-08
+-2.9746e-06
+0.0000e+00
+2024-12-09 23:59:05,641 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-3.2025e-13
+0.0000e+00
+-5.1436e-08
+0.0000e+00
+-1.3302e-03
+2024-12-10 00:18:05,060 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+-7.4045e-11
+0.0000e+00
+-1.4082e-11
+0.0000e+00
+0.0000e+00
+2024-12-10 00:18:05,090 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-2.7746e-13
+0.0000e+00
+0.0000e+00
+-4.4755e-13
+-3.1831e-08
+2024-12-10 00:35:51,807 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+8.7631e-08
+0.0000e+00
+3.5118e-11
+5.0391e-11
+-1.3388e-07
+2024-12-10 00:35:51,832 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-7.4740e-14
+0.0000e+00
+1.2410e-08
+-8.3800e-12
+-2.0505e-07
+2024-12-10 00:52:50,511 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+1.8812e-03
+0.0000e+00
+-7.5314e-12
+nan
+0.0000e+00
+2024-12-10 00:52:50,539 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-7.5761e-11
+6.5917e-12
+9.1940e-15
+-2.1006e-11
+4.3588e-08
+2024-12-10 01:03:06,369 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+-2.4284e-11
+7.8586e-04
+-1.5652e-11
+1.2069e-12
+9.3776e-11
+2024-12-10 01:03:06,386 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-1.2973e-12
+-1.0281e-07
+-3.4556e-05
+0.0000e+00
+5.4702e-05
+2024-12-10 01:16:53,625 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+0.0000e+00
+-5.7363e-05
+2.7068e-07
+-7.2775e-05
+0.0000e+00
+2024-12-10 01:16:53,652 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-2.8751e-03
+-3.9767e-11
+6.7762e-07
+0.0000e+00
+0.0000e+00
+2024-12-10 01:30:17,451 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+1.5325e-07
+1.3087e-11
+0.0000e+00
+3.8009e-09
+-4.4016e-13
+2024-12-10 01:30:17,472 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+0.0000e+00
+1.9308e-11
+2.2362e-08
+3.1865e-08
+-2.5233e-11
+2024-12-10 01:42:52,812 - logger.py:50 - 二阶导 hessian matrix (随机部分):
+0.0000e+00
+0.0000e+00
+0.0000e+00
+0.0000e+00
+1.6935e-05
+2024-12-10 01:42:52,828 - logger.py:50 - 最终二阶导 hessian matrix (随机部分):
+-4.7779e-08
+-2.3621e-07
+0.0000e+00
+2.1382e-11
+0.0000e+00
+2024-12-10 13:02:07,433 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-10 13:07:48,468 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-10 13:18:49,862 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-10 13:27:07,603 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-10 15:26:06,808 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-10 15:26:16,639 - logger.py:50 - Starting epoch 0 training.
+2024-12-10 15:26:17,092 - logger.py:50 - Processing step 0/20
+2024-12-10 15:26:17,171 - logger.py:50 - Starting data preprocessing.
+2024-12-10 15:26:17,172 - logger.py:50 - Starting model forward pass.
+2024-12-10 15:26:18,515 - logger.py:50 - Starting gradient computation.
+2024-12-10 15:26:18,927 - logger.py:50 - Starting Hessian computation.
+2024-12-10 15:35:50,844 - logger.py:50 - Sampled Hessian values:
+1.7162e-04
+2.3486e-12
+0.0000e+00
+-3.2804e-04
+0.0000e+00
+1.2968e-12
+0.0000e+00
+0.0000e+00
+0.0000e+00
+-3.3990e-04
+2024-12-10 15:35:50,846 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 15:35:50,869 - logger.py:50 - Computing loss.
+2024-12-10 15:35:50,889 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 15:53:03,386 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-10 15:53:12,428 - logger.py:50 - Starting epoch 0 training.
+2024-12-10 15:53:12,744 - logger.py:50 - Processing step 0/20
+2024-12-10 15:53:12,786 - logger.py:50 - Starting data preprocessing.
+2024-12-10 15:53:12,786 - logger.py:50 - Starting model forward pass.
+2024-12-10 15:53:13,941 - logger.py:50 - Starting gradient computation.
+2024-12-10 15:53:14,295 - logger.py:50 - Starting Hessian computation.
+2024-12-10 16:00:50,049 - logger.py:50 - Sampled Hessian values:
+1.7162e-04
+2.3486e-12
+0.0000e+00
+-3.2804e-04
+0.0000e+00
+1.2968e-12
+0.0000e+00
+0.0000e+00
+0.0000e+00
+-3.3990e-04
+2024-12-10 16:00:50,051 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 16:00:50,071 - logger.py:50 - Computing loss.
+2024-12-10 16:00:50,092 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 16:44:50,038 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-10 16:45:00,337 - logger.py:50 - Starting epoch 0 training.
+2024-12-10 16:45:00,445 - logger.py:50 - Processing step 0/20
+2024-12-10 16:45:00,489 - logger.py:50 - Starting data preprocessing.
+2024-12-10 16:45:00,489 - logger.py:50 - Starting model forward pass.
+2024-12-10 16:45:01,824 - logger.py:50 - Starting gradient computation.
+2024-12-10 16:45:02,181 - logger.py:50 - Starting Hessian computation.
+2024-12-10 16:52:48,245 - logger.py:50 - Sampled Hessian values:
+1.7162e-04
+2.3486e-12
+0.0000e+00
+-3.2804e-04
+0.0000e+00
+1.2969e-12
+0.0000e+00
+0.0000e+00
+0.0000e+00
+-3.3990e-04
+2024-12-10 16:52:48,247 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 16:52:48,271 - logger.py:50 - Computing loss.
+2024-12-10 16:52:48,292 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 17:02:11,716 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-10 17:02:21,722 - logger.py:50 - Processing step 0/20
+2024-12-10 17:02:21,766 - logger.py:50 - Starting model forward pass.
+2024-12-10 17:02:23,009 - logger.py:50 - Starting gradient computation.
+2024-12-10 17:02:23,396 - logger.py:50 - Starting Hessian computation.
+2024-12-10 17:11:08,016 - logger.py:50 - Sampled Hessian values:
+1.7162e-04
+2.3486e-12
+0.0000e+00
+-3.2804e-04
+0.0000e+00
+1.2968e-12
+0.0000e+00
+0.0000e+00
+0.0000e+00
+-3.3990e-04
+2024-12-10 17:11:08,047 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 17:11:08,051 - logger.py:50 - Computing loss.
+2024-12-10 17:11:08,072 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 17:11:08,101 - logger.py:50 - Epoch [0], Step [0/20], Loss: 1.9307, MAE: 0.2411
+2024-12-10 17:11:08,196 - logger.py:50 - Processing step 1/20
+2024-12-10 17:11:08,266 - logger.py:50 - Starting model forward pass.
+2024-12-10 17:11:09,093 - logger.py:50 - Starting gradient computation.
+2024-12-10 17:11:09,380 - logger.py:50 - Starting Hessian computation.
+2024-12-10 17:23:40,586 - logger.py:50 - Sampled Hessian values:
+0.0000e+00
+3.8566e-13
+3.2663e-13
+1.5835e-09
+-5.2448e-10
+4.9950e-12
+-2.9786e-11
+-2.8247e-07
+0.0000e+00
+5.7314e-04
+2024-12-10 17:23:40,588 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 17:23:40,591 - logger.py:50 - Computing loss.
+2024-12-10 17:23:40,593 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 17:23:40,702 - logger.py:50 - Processing step 2/20
+2024-12-10 17:23:40,769 - logger.py:50 - Starting model forward pass.
+2024-12-10 17:23:41,060 - logger.py:50 - Starting gradient computation.
+2024-12-10 17:23:41,558 - logger.py:50 - Starting Hessian computation.
+2024-12-10 17:45:38,621 - logger.py:50 - Sampled Hessian values:
+6.2917e-13
+0.0000e+00
+2.0350e-11
+0.0000e+00
+3.2448e-10
+-9.0507e-12
+4.6866e-12
+0.0000e+00
+-2.3916e-04
+-3.9225e-11
+2024-12-10 17:45:38,623 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 17:45:38,625 - logger.py:50 - Computing loss.
+2024-12-10 17:45:38,628 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 17:45:38,743 - logger.py:50 - Processing step 3/20
+2024-12-10 17:45:39,142 - logger.py:50 - Starting model forward pass.
+2024-12-10 17:45:39,553 - logger.py:50 - Starting gradient computation.
+2024-12-10 17:45:40,144 - logger.py:50 - Starting Hessian computation.
+2024-12-10 18:15:32,707 - logger.py:50 - Sampled Hessian values:
+7.4954e-08
+-1.9393e-03
+-6.5163e-12
+0.0000e+00
+2.1973e-11
+3.1627e-12
+4.9879e-08
+-8.6158e-12
+0.0000e+00
+4.1035e-08
+2024-12-10 18:15:32,709 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 18:15:32,712 - logger.py:50 - Computing loss.
+2024-12-10 18:15:32,715 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 18:15:32,824 - logger.py:50 - Processing step 4/20
+2024-12-10 18:15:32,894 - logger.py:50 - Starting model forward pass.
+2024-12-10 18:15:33,078 - logger.py:50 - Starting gradient computation.
+2024-12-10 18:15:33,744 - logger.py:50 - Starting Hessian computation.
+2024-12-10 18:39:54,186 - logger.py:50 - Sampled Hessian values:
+8.9041e-07
+0.0000e+00
+3.2490e-11
+2.0992e-12
+2.0949e-12
+0.0000e+00
+-1.0211e-11
+-1.3433e-09
+-1.2070e-12
+-1.6354e-11
+2024-12-10 18:39:54,188 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 18:39:54,191 - logger.py:50 - Computing loss.
+2024-12-10 18:39:54,193 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 18:39:54,300 - logger.py:50 - Processing step 5/20
+2024-12-10 18:39:54,367 - logger.py:50 - Starting model forward pass.
+2024-12-10 18:39:54,825 - logger.py:50 - Starting gradient computation.
+2024-12-10 18:39:55,499 - logger.py:50 - Starting Hessian computation.
+2024-12-10 19:05:38,483 - logger.py:50 - Sampled Hessian values:
+-2.2773e-11
+-4.4161e-11
+6.8944e-11
+-3.3654e-11
+-1.6224e-10
+-2.2771e-11
+5.2953e-07
+3.5571e-10
+1.7123e-11
+-5.9422e-11
+2024-12-10 19:05:38,484 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 19:05:38,486 - logger.py:50 - Computing loss.
+2024-12-10 19:05:38,487 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 19:05:38,567 - logger.py:50 - Processing step 6/20
+2024-12-10 19:05:38,620 - logger.py:50 - Starting model forward pass.
+2024-12-10 19:05:38,745 - logger.py:50 - Starting gradient computation.
+2024-12-10 19:05:39,414 - logger.py:50 - Starting Hessian computation.
+2024-12-10 19:34:04,153 - logger.py:50 - Sampled Hessian values:
+0.0000e+00
+0.0000e+00
+-2.9876e-12
+0.0000e+00
+0.0000e+00
+0.0000e+00
+-4.8943e-08
+-1.3145e-08
+0.0000e+00
+0.0000e+00
+2024-12-10 19:34:04,177 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 19:34:04,184 - logger.py:50 - Computing loss.
+2024-12-10 19:34:04,244 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 19:34:04,728 - logger.py:50 - Processing step 7/20
+2024-12-10 19:34:07,645 - logger.py:50 - Starting model forward pass.
+2024-12-10 19:34:08,152 - logger.py:50 - Starting gradient computation.
+2024-12-10 19:34:08,792 - logger.py:50 - Starting Hessian computation.
+2024-12-10 20:04:04,713 - logger.py:50 - Sampled Hessian values:
+0.0000e+00
+0.0000e+00
+-4.4697e-12
+0.0000e+00
+-1.8463e-10
+8.4678e-10
+-3.8735e-12
+-1.9411e-11
+-4.9036e-11
+1.8803e-12
+2024-12-10 20:04:04,715 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 20:04:04,717 - logger.py:50 - Computing loss.
+2024-12-10 20:04:04,720 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 20:04:04,878 - logger.py:50 - Processing step 8/20
+2024-12-10 20:04:04,935 - logger.py:50 - Starting model forward pass.
+2024-12-10 20:04:05,087 - logger.py:50 - Starting gradient computation.
+2024-12-10 20:04:05,771 - logger.py:50 - Starting Hessian computation.
+2024-12-10 20:34:12,192 - logger.py:50 - Sampled Hessian values:
+-6.1392e-04
+0.0000e+00
+1.5897e-08
+2.7105e-07
+5.1119e-11
+0.0000e+00
+0.0000e+00
+3.6149e-03
+3.7156e-08
+-1.2415e-03
+2024-12-10 20:34:12,193 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 20:34:12,196 - logger.py:50 - Computing loss.
+2024-12-10 20:34:12,199 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 20:34:12,317 - logger.py:50 - Processing step 9/20
+2024-12-10 20:34:12,370 - logger.py:50 - Starting model forward pass.
+2024-12-10 20:34:12,529 - logger.py:50 - Starting gradient computation.
+2024-12-10 20:34:13,213 - logger.py:50 - Starting Hessian computation.
+2024-12-10 20:57:06,425 - logger.py:50 - Sampled Hessian values:
+-3.5948e-11
+0.0000e+00
+0.0000e+00
+0.0000e+00
+4.2562e-10
+-6.1254e-09
+0.0000e+00
+0.0000e+00
+-4.8925e-13
+3.2625e-11
+2024-12-10 20:57:06,427 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 20:57:06,429 - logger.py:50 - Computing loss.
+2024-12-10 20:57:06,431 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 20:57:06,557 - logger.py:50 - Processing step 10/20
+2024-12-10 20:57:06,630 - logger.py:50 - Starting model forward pass.
+2024-12-10 20:57:06,796 - logger.py:50 - Starting gradient computation.
+2024-12-10 20:57:07,460 - logger.py:50 - Starting Hessian computation.
+2024-12-10 21:23:25,465 - logger.py:50 - Sampled Hessian values:
+1.5669e-10
+0.0000e+00
+-7.3983e-11
+8.2015e-05
+-1.5295e-07
+-9.9597e-15
+-4.8644e-08
+0.0000e+00
+8.3277e-09
+0.0000e+00
+2024-12-10 21:23:25,466 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 21:23:25,469 - logger.py:50 - Computing loss.
+2024-12-10 21:23:25,471 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 21:23:25,598 - logger.py:50 - Processing step 11/20
+2024-12-10 21:23:25,868 - logger.py:50 - Starting model forward pass.
+2024-12-10 21:23:26,026 - logger.py:50 - Starting gradient computation.
+2024-12-10 21:23:26,702 - logger.py:50 - Starting Hessian computation.
+2024-12-10 21:53:48,443 - logger.py:50 - Sampled Hessian values:
+0.0000e+00
+-1.4511e-08
+1.7584e-06
+2.9015e-07
+1.7103e-07
+0.0000e+00
+0.0000e+00
+-2.0361e-04
+0.0000e+00
+0.0000e+00
+2024-12-10 21:53:48,444 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 21:53:48,447 - logger.py:50 - Computing loss.
+2024-12-10 21:53:48,450 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 21:53:48,592 - logger.py:50 - Processing step 12/20
+2024-12-10 21:53:48,654 - logger.py:50 - Starting model forward pass.
+2024-12-10 21:53:49,129 - logger.py:50 - Starting gradient computation.
+2024-12-10 21:53:49,829 - logger.py:50 - Starting Hessian computation.
+2024-12-10 22:21:02,047 - logger.py:50 - Sampled Hessian values:
+0.0000e+00
+0.0000e+00
+-9.0343e-09
+0.0000e+00
+-3.8876e-08
+6.5792e-12
+1.1080e-10
+7.9398e-13
+6.5026e-12
+-1.2301e-08
+2024-12-10 22:21:02,049 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 22:21:02,052 - logger.py:50 - Computing loss.
+2024-12-10 22:21:02,054 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 22:21:02,190 - logger.py:50 - Processing step 13/20
+2024-12-10 22:21:02,265 - logger.py:50 - Starting model forward pass.
+2024-12-10 22:21:02,724 - logger.py:50 - Starting gradient computation.
+2024-12-10 22:21:03,424 - logger.py:50 - Starting Hessian computation.
+2024-12-10 22:48:00,038 - logger.py:50 - Sampled Hessian values:
+8.0733e-12
+2.8115e-04
+4.3236e-08
+-3.0072e-11
+2.3330e-10
+-9.5200e-12
+0.0000e+00
+-3.1108e-10
+0.0000e+00
+0.0000e+00
+2024-12-10 22:48:00,040 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 22:48:00,043 - logger.py:50 - Computing loss.
+2024-12-10 22:48:00,046 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 22:48:00,189 - logger.py:50 - Processing step 14/20
+2024-12-10 22:48:00,262 - logger.py:50 - Starting model forward pass.
+2024-12-10 22:48:00,456 - logger.py:50 - Starting gradient computation.
+2024-12-10 22:48:01,167 - logger.py:50 - Starting Hessian computation.
+2024-12-10 23:13:36,766 - logger.py:50 - Sampled Hessian values:
+0.0000e+00
+0.0000e+00
+-9.0751e-10
+8.8612e-13
+0.0000e+00
+0.0000e+00
+4.0186e-04
+5.2342e-13
+-5.3045e-12
+0.0000e+00
+2024-12-10 23:13:36,770 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 23:13:36,773 - logger.py:50 - Computing loss.
+2024-12-10 23:13:36,776 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 23:13:36,901 - logger.py:50 - Processing step 15/20
+2024-12-10 23:13:37,210 - logger.py:50 - Starting model forward pass.
+2024-12-10 23:13:37,660 - logger.py:50 - Starting gradient computation.
+2024-12-10 23:13:38,288 - logger.py:50 - Starting Hessian computation.
+2024-12-10 23:34:24,488 - logger.py:50 - Sampled Hessian values:
+3.9073e-04
+0.0000e+00
+6.6065e-13
+6.2235e-04
+2.3569e-16
+9.3036e-12
+0.0000e+00
+3.3813e-11
+0.0000e+00
+-5.5564e-12
+2024-12-10 23:34:24,490 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 23:34:24,494 - logger.py:50 - Computing loss.
+2024-12-10 23:34:24,497 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 23:34:24,615 - logger.py:50 - Processing step 16/20
+2024-12-10 23:34:24,677 - logger.py:50 - Starting model forward pass.
+2024-12-10 23:34:24,853 - logger.py:50 - Starting gradient computation.
+2024-12-10 23:34:25,498 - logger.py:50 - Starting Hessian computation.
+2024-12-10 23:58:57,641 - logger.py:50 - Sampled Hessian values:
+-5.1319e-11
+2.5613e-08
+-5.6536e-11
+0.0000e+00
+0.0000e+00
+0.0000e+00
+3.3985e-03
+0.0000e+00
+-1.7224e-07
+0.0000e+00
+2024-12-10 23:58:57,643 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-10 23:58:57,646 - logger.py:50 - Computing loss.
+2024-12-10 23:58:57,648 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-10 23:58:57,772 - logger.py:50 - Processing step 17/20
+2024-12-10 23:58:57,820 - logger.py:50 - Starting model forward pass.
+2024-12-10 23:58:57,958 - logger.py:50 - Starting gradient computation.
+2024-12-10 23:58:58,601 - logger.py:50 - Starting Hessian computation.
+2024-12-11 00:22:15,945 - logger.py:50 - Sampled Hessian values:
+-2.9921e-07
+-1.4833e-09
+2.3337e-10
+-6.3689e-11
+0.0000e+00
+0.0000e+00
+0.0000e+00
+3.3514e-12
+-6.0973e-08
+-3.5611e-09
+2024-12-11 00:22:15,946 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-11 00:22:15,950 - logger.py:50 - Computing loss.
+2024-12-11 00:22:15,955 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-11 00:22:16,078 - logger.py:50 - Processing step 18/20
+2024-12-11 00:22:16,141 - logger.py:50 - Starting model forward pass.
+2024-12-11 00:22:16,308 - logger.py:50 - Starting gradient computation.
+2024-12-11 00:22:16,959 - logger.py:50 - Starting Hessian computation.
+2024-12-11 00:45:49,772 - logger.py:50 - Sampled Hessian values:
+4.5839e-12
+0.0000e+00
+-1.8419e-10
+0.0000e+00
+-8.0127e-07
+0.0000e+00
+0.0000e+00
+0.0000e+00
+0.0000e+00
+-3.5113e-11
+2024-12-11 00:45:49,775 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-11 00:45:49,777 - logger.py:50 - Computing loss.
+2024-12-11 00:45:49,781 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-11 00:45:49,952 - logger.py:50 - Processing step 19/20
+2024-12-11 00:45:50,279 - logger.py:50 - Starting model forward pass.
+2024-12-11 00:45:50,709 - logger.py:50 - Starting gradient computation.
+2024-12-11 00:45:51,340 - logger.py:50 - Starting Hessian computation.
+2024-12-12 00:31:03,129 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 00:31:59,087 - logger.py:50 - Processing step 0/2
+2024-12-12 00:31:59,139 - logger.py:50 - Starting model forward pass.
+2024-12-12 00:32:00,950 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:25:59,305 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=4, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 16:26:06,966 - logger.py:50 - Processing step 0/2
+2024-12-12 16:26:07,021 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:26:08,736 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:28:02,109 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=2, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 16:28:09,566 - logger.py:50 - Processing step 0/4
+2024-12-12 16:28:09,779 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:28:11,536 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:29:59,964 - logger.py:50 - Sampled Hessian values:
+3.2684e-12
+-8.3910e-08
+-2.4355e-11
+-1.6728e-08
+-3.9486e-13
+0.0000e+00
+2.7405e-12
+-2.8417e-06
+9.5682e-05
+-1.0660e-07
+2024-12-12 16:29:59,991 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 16:29:59,993 - logger.py:50 - Computing loss.
+2024-12-12 16:30:00,026 - logger.py:50 - loss的值：0.7932259440422058
+2024-12-12 16:30:00,028 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f661bb84610>, requires_grad: True
+2024-12-12 16:30:00,028 - logger.py:50 - Visualizing computation graph.
+2024-12-12 16:30:00,030 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 16:30:00,090 - logger.py:50 - 参数未更新
+2024-12-12 16:30:00,091 - logger.py:50 - Epoch [0], Step [0/4], Loss: 0.7932, MAE: 0.1636
+2024-12-12 16:30:00,146 - logger.py:50 - Processing step 1/4
+2024-12-12 16:30:00,189 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:30:00,894 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:36:06,179 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=2, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 16:36:13,540 - logger.py:50 - Processing step 0/4
+2024-12-12 16:36:13,739 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:36:14,671 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:38:02,990 - logger.py:50 - Sampled Hessian values:
+3.2684e-12
+-8.3910e-08
+-2.4355e-11
+-1.6728e-08
+-3.9486e-13
+0.0000e+00
+2.7405e-12
+-2.8417e-06
+9.5682e-05
+-1.0660e-07
+2024-12-12 16:38:03,021 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 16:38:03,022 - logger.py:50 - Computing loss.
+2024-12-12 16:38:03,040 - logger.py:50 - loss的值：0.7932259440422058
+2024-12-12 16:38:03,041 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f51947a7af0>, requires_grad: True
+2024-12-12 16:38:03,041 - logger.py:50 - Visualizing computation graph.
+2024-12-12 16:38:03,043 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 16:38:03,105 - logger.py:50 - 参数未更新
+2024-12-12 16:38:03,106 - logger.py:50 - Epoch [0], Step [0/4], Loss: 0.7932, MAE: 0.1636
+2024-12-12 16:38:03,163 - logger.py:50 - Processing step 1/4
+2024-12-12 16:38:03,205 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:38:03,936 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:38:41,768 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=2, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 16:38:49,036 - logger.py:50 - Processing step 0/4
+2024-12-12 16:38:49,238 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:38:50,158 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:39:16,394 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=2, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 16:39:23,885 - logger.py:50 - Processing step 0/4
+2024-12-12 16:39:24,098 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:39:25,078 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:43:17,177 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=2, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 16:43:24,586 - logger.py:50 - Processing step 0/4
+2024-12-12 16:43:24,784 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:43:25,709 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:45:13,448 - logger.py:50 - Sampled Hessian values:
+3.2684e-12
+-8.3910e-08
+-2.4355e-11
+-1.6728e-08
+-3.9486e-13
+0.0000e+00
+2.7405e-12
+-2.8417e-06
+9.5682e-05
+-1.0660e-07
+2024-12-12 16:45:13,467 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 16:45:13,468 - logger.py:50 - Computing loss.
+2024-12-12 16:45:13,486 - logger.py:50 - loss的值：0.7932259440422058
+2024-12-12 16:45:13,486 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f98935fcaf0>, requires_grad: True
+2024-12-12 16:45:13,486 - logger.py:50 - Visualizing computation graph.
+2024-12-12 16:45:13,488 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 16:45:13,542 - logger.py:50 - 参数未更新
+2024-12-12 16:45:13,544 - logger.py:50 - Epoch [0], Step [0/4], Loss: 0.7932, MAE: 0.1636
+2024-12-12 16:45:13,605 - logger.py:50 - Processing step 1/4
+2024-12-12 16:45:13,652 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:45:14,343 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:47:06,096 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=2, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 16:47:13,504 - logger.py:50 - Processing step 0/4
+2024-12-12 16:47:13,726 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:47:14,657 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:49:42,006 - logger.py:50 - Sampled Hessian values:
+3.2684e-12
+-8.3910e-08
+-2.4355e-11
+-1.6728e-08
+-3.9487e-13
+0.0000e+00
+2.7405e-12
+-2.8417e-06
+9.5682e-05
+-1.0660e-07
+2024-12-12 16:49:42,036 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 16:49:50,608 - logger.py:50 - Computing loss.
+2024-12-12 16:49:50,623 - logger.py:50 - loss的值：0.7932259440422058
+2024-12-12 16:49:50,623 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7fafce8d9640>, requires_grad: True
+2024-12-12 16:50:07,470 - logger.py:50 - Visualizing computation graph.
+2024-12-12 16:50:07,472 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 16:50:07,539 - logger.py:50 - 参数未更新
+2024-12-12 16:50:07,540 - logger.py:50 - Epoch [0], Step [0/4], Loss: 0.7932, MAE: 0.1636
+2024-12-12 16:50:07,603 - logger.py:50 - Processing step 1/4
+2024-12-12 16:50:07,650 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:50:08,351 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:50:41,445 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=2, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 16:50:48,967 - logger.py:50 - Processing step 0/4
+2024-12-12 16:50:49,185 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:50:50,162 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:54:01,866 - logger.py:50 - Sampled Hessian values:
+3.2684e-12
+-8.3910e-08
+-2.4355e-11
+-1.6728e-08
+-3.9487e-13
+0.0000e+00
+2.7405e-12
+-2.8417e-06
+9.5682e-05
+-1.0660e-07
+2024-12-12 16:54:01,888 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 16:54:01,890 - logger.py:50 - Computing loss.
+2024-12-12 16:54:01,909 - logger.py:50 - loss的值：0.7932259440422058
+2024-12-12 16:54:01,909 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f2b8379f670>, requires_grad: True
+2024-12-12 16:54:01,910 - logger.py:50 - Visualizing computation graph.
+2024-12-12 16:54:01,912 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 16:54:01,975 - logger.py:50 - 参数未更新
+2024-12-12 16:54:01,976 - logger.py:50 - Epoch [0], Step [0/4], Loss: 0.7932, MAE: 0.1636
+2024-12-12 16:54:02,034 - logger.py:50 - Processing step 1/4
+2024-12-12 16:54:02,077 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:54:02,772 - logger.py:50 - Starting gradient computation.
+2024-12-12 16:58:06,476 - logger.py:50 - Sampled Hessian values:
+-6.4617e-11
+6.7074e-08
+-2.5392e-07
+-1.1414e-04
+-3.1425e-11
+0.0000e+00
+-1.4037e-04
+1.0651e-03
+1.0717e-11
+5.3880e-08
+2024-12-12 16:58:06,478 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 16:58:06,479 - logger.py:50 - Computing loss.
+2024-12-12 16:58:06,480 - logger.py:50 - loss的值：2.080552577972412
+2024-12-12 16:58:06,481 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f2b702179d0>, requires_grad: True
+2024-12-12 16:58:06,481 - logger.py:50 - Visualizing computation graph.
+2024-12-12 16:58:06,483 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 16:58:06,524 - logger.py:50 - 参数未更新
+2024-12-12 16:58:06,585 - logger.py:50 - Processing step 2/4
+2024-12-12 16:58:06,631 - logger.py:50 - Starting model forward pass.
+2024-12-12 16:58:06,746 - logger.py:50 - Starting gradient computation.
+2024-12-12 17:03:12,752 - logger.py:50 - Sampled Hessian values:
+4.8809e-11
+-1.0975e-03
+-4.2938e-13
+-1.1765e-08
+-5.9687e-07
+-6.2322e-13
+9.4015e-11
+5.7402e-08
+3.3440e-11
+-6.5715e-11
+2024-12-12 17:03:12,753 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 17:03:12,755 - logger.py:50 - Computing loss.
+2024-12-12 17:03:12,756 - logger.py:50 - loss的值：0.8949596881866455
+2024-12-12 17:03:12,756 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f2b8379f670>, requires_grad: True
+2024-12-12 17:03:12,756 - logger.py:50 - Visualizing computation graph.
+2024-12-12 17:03:12,758 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 17:03:12,800 - logger.py:50 - 参数未更新
+2024-12-12 17:03:12,847 - logger.py:50 - Processing step 3/4
+2024-12-12 17:03:12,881 - logger.py:50 - Starting model forward pass.
+2024-12-12 17:03:12,991 - logger.py:50 - Starting gradient computation.
+2024-12-12 17:06:26,562 - logger.py:50 - Sampled Hessian values:
+-2.7214e-07
+-4.9483e-04
+-1.9476e-03
+1.3257e-03
+-1.0890e-11
+-8.0036e-10
+-1.4467e-07
+-4.0330e-07
+8.3834e-03
+-3.1301e-04
+2024-12-12 17:06:26,564 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 17:06:26,565 - logger.py:50 - Computing loss.
+2024-12-12 17:06:26,566 - logger.py:50 - loss的值：0.286880224943161
+2024-12-12 17:06:26,566 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f2b702179d0>, requires_grad: True
+2024-12-12 17:06:26,566 - logger.py:50 - Visualizing computation graph.
+2024-12-12 17:06:26,569 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 17:06:26,602 - logger.py:50 - 参数未更新
+2024-12-12 17:07:11,563 - logger.py:50 - Step [0/1], Loss: 1.3727, MAE: 0.3626
+2024-12-12 17:08:01,622 - logger.py:50 - Step [0/1], Loss: 1.3524, MAE: 0.2774
+2024-12-12 17:08:02,067 - logger.py:50 - Epoch: [0] train loss: 1.05318, train MAE: 0.17630,val loss: 1.37273, val MAE: 0.36264,test loss: 1.35236, test MAE: 0.27735,Time: 1033.15s
+2024-12-12 17:08:02,068 - logger.py:50 - Best -- epoch=0, train loss: 1.05318, val loss: 1.37273, test loss: 1.35236
+
+2024-12-12 17:08:02,142 - logger.py:50 - Processing step 0/4
+2024-12-12 17:08:02,191 - logger.py:50 - Starting model forward pass.
+2024-12-12 17:08:02,270 - logger.py:50 - Starting gradient computation.
+2024-12-12 17:12:37,795 - logger.py:50 - Sampled Hessian values:
+7.3676e-11
+1.8305e-04
+0.0000e+00
+5.7061e-08
+1.2634e-11
+-7.5034e-12
+0.0000e+00
+6.0577e-07
+6.4963e-11
+-2.0082e-11
+2024-12-12 17:12:37,796 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 17:12:37,797 - logger.py:50 - Computing loss.
+2024-12-12 17:12:37,798 - logger.py:50 - loss的值：1.9741488695144653
+2024-12-12 17:12:37,798 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f2b5417ea90>, requires_grad: True
+2024-12-12 17:12:37,798 - logger.py:50 - Visualizing computation graph.
+2024-12-12 17:12:37,800 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 17:12:37,830 - logger.py:50 - 参数未更新
+2024-12-12 17:12:37,832 - logger.py:50 - Epoch [1], Step [0/4], Loss: 1.9741, MAE: 0.2071
+2024-12-12 17:12:37,892 - logger.py:50 - Processing step 1/4
+2024-12-12 17:12:37,939 - logger.py:50 - Starting model forward pass.
+2024-12-12 17:12:38,021 - logger.py:50 - Starting gradient computation.
+2024-12-12 17:16:51,867 - logger.py:50 - Sampled Hessian values:
+-3.2529e-08
+-1.1405e-11
+-1.9283e-07
+0.0000e+00
+1.5472e-09
+5.2929e-08
+2.5363e-04
+4.9153e-05
+2.5859e-05
+-9.5832e-12
+2024-12-12 17:16:51,868 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 17:16:51,870 - logger.py:50 - Computing loss.
+2024-12-12 17:16:51,870 - logger.py:50 - loss的值：3.089205026626587
+2024-12-12 17:16:51,871 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f2cd18bbac0>, requires_grad: True
+2024-12-12 17:16:51,871 - logger.py:50 - Visualizing computation graph.
+2024-12-12 17:16:51,873 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 17:16:51,903 - logger.py:50 - 参数未更新
+2024-12-12 17:16:51,955 - logger.py:50 - Processing step 2/4
+2024-12-12 17:16:51,994 - logger.py:50 - Starting model forward pass.
+2024-12-12 17:16:52,088 - logger.py:50 - Starting gradient computation.
+2024-12-12 17:20:04,548 - logger.py:50 - Sampled Hessian values:
+0.0000e+00
+-2.7277e-04
+-1.3549e-11
+-3.3145e-07
+-1.7572e-10
+-1.0843e-08
+-5.7554e-03
+-1.3935e-02
+2.4893e-07
+-6.1042e-12
+2024-12-12 17:20:04,549 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 17:20:04,550 - logger.py:50 - Computing loss.
+2024-12-12 17:20:04,551 - logger.py:50 - loss的值：0.286880224943161
+2024-12-12 17:20:04,551 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7f2b70300cd0>, requires_grad: True
+2024-12-12 17:20:04,551 - logger.py:50 - Visualizing computation graph.
+2024-12-12 17:20:04,554 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 17:20:04,587 - logger.py:50 - 参数未更新
+2024-12-12 17:20:04,851 - logger.py:50 - Processing step 3/4
+2024-12-12 17:20:04,895 - logger.py:50 - Starting model forward pass.
+2024-12-12 17:20:04,992 - logger.py:50 - Starting gradient computation.
+2024-12-12 17:22:33,111 - logger.py:50 - Namespace(output_dir='models/ForceCon2/der.log', model_name='graph_attention_transformer_nonlinear_l2_e3_noNorm_dx', input_irreps='86x0e', radius=8.0, num_basis=86, output_channels=1, epochs=20, batch_size=2, model_ema=False, model_ema_decay=0.9999, model_ema_force_cpu=False, drop_path=0.0, opt='adamw', opt_eps=1e-08, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.005, sched='cosine', lr=5e-05, lr_noise=None, lr_noise_pct=0.67, lr_noise_std=1.0, warmup_lr=1e-06, min_lr=1e-06, decay_epochs=30, warmup_epochs=5, cooldown_epochs=10, patience_epochs=10, decay_rate=0.1, print_freq=50, target=0, data_path='../datasets', run_fold=4, order_type='all', feature_type='one_hot', compute_stats=False, standardize=True, loss='l1', seed=0, workers=0, pin_mem=True, amp=False, world_size=1, dist_url='env://', distributed=False, rank=0, local_rank=0)
+2024-12-12 17:22:40,641 - logger.py:50 - Processing step 0/4
+2024-12-12 17:22:40,845 - logger.py:50 - Starting model forward pass.
+2024-12-12 17:22:41,769 - logger.py:50 - Starting gradient computation.
+2024-12-12 17:25:09,648 - logger.py:50 - Sampled Hessian values:
+3.2684e-12
+-8.3910e-08
+-2.4355e-11
+-1.6728e-08
+-3.9486e-13
+0.0000e+00
+2.7405e-12
+-2.8417e-06
+9.5682e-05
+-1.0660e-07
+2024-12-12 17:25:09,670 - logger.py:50 - Processing Hessian matrix for subgraphs.
+2024-12-12 17:25:09,672 - logger.py:50 - Computing loss.
+2024-12-12 17:25:09,691 - logger.py:50 - loss的值：0.7932259440422058
+2024-12-12 17:25:09,692 - logger.py:50 - Loss grad_fn: <MseLossBackward0 object at 0x7fb47acd9670>, requires_grad: True
+2024-12-12 17:25:09,692 - logger.py:50 - Visualizing computation graph.
+2024-12-12 17:25:09,694 - logger.py:50 - Performing backward pass and optimizer step.
+2024-12-12 17:25:09,753 - logger.py:50 - 参数未更新
+2024-12-12 17:25:09,754 - logger.py:50 - Epoch [0], Step [0/4], Loss: 0.7932, MAE: 0.1636
+2024-12-12 17:25:09,812 - logger.py:50 - Processing step 1/4
+2024-12-12 17:25:09,855 - logger.py:50 - Starting model forward pass.
+2024-12-12 17:25:10,531 - logger.py:50 - Starting gradient computation.

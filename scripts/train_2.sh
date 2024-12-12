@@ -17,7 +17,7 @@ CUDA_VISIBLE_DEVICES=0 python -u ../main_re.py \
     --input-irreps '86x0e' \
     --data-path '../datasets' \
     --run-fold 4 \
-    --batch-size 1 \
+    --batch-size 2 \
     --epochs 20 \
     --radius 8.0 \
     --num-basis 86 \

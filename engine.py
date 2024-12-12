@@ -1,4 +1,6 @@
 import torch
+import torch.profiler
+from torch.profiler import profile, record_function, ProfilerActivity
 import torch.nn as nn
 from typing import Iterable, Optional
 from timm.utils import accuracy, ModelEmaV2, dispatch_clip_grad
@@ -8,7 +10,9 @@ from concurrent.futures import ThreadPoolExecutor
 import torch_geometric
 from nets.loss import FrobeniusNormLoss,EigenLoss
 from torch.autograd.functional import jacobian, hessian
+# from torchviz import make_dot
 import logging
+
 ModelEma = ModelEmaV2
 
 class AverageMeter:
@@ -87,6 +91,25 @@ def compute_hessian_vectorized(model, inputs, batch, f_in, edge_src, edge_dst, e
     hessian_matrix = hessian_matrix.view(N, 3, N, 3)
     return hessian_matrix
 
+def trace_grad_fn(tensor, visited=None):
+    if visited is None:
+        visited = set()
+    if tensor.grad_fn is None:
+        print(f"Reached a leaf tensor")
+        return
+    if tensor.grad_fn in visited:
+        print("Detected a cycle in the computation graph.")
+        return
+    print(f"Current tensor: {tensor.shape}, grad_fn: {tensor.grad_fn}")
+    visited.add(tensor.grad_fn)
+    for next_fn, _ in tensor.grad_fn.next_functions:
+        if next_fn is not None:
+            try:
+                var = getattr(next_fn, 'variable', None)
+                if var is not None:
+                    trace_grad_fn(var, visited)
+            except AttributeError:
+                continue
 
 def train_one_epoch_dx(
     model: torch.nn.Module, 
@@ -101,7 +124,10 @@ def train_one_epoch_dx(
     clip_grad=None,
     print_freq: int = 50, 
     logger=None
-):
+    ):
+    # 保存初始模型参数
+    before_params = [param.clone().detach() for param in model.parameters()]
+
     model.train()
     criterion.train()
 
@@ -109,10 +135,24 @@ def train_one_epoch_dx(
     mae_metric = AverageMeter()
 
     for step, data in enumerate(data_loader):
+        logger.info(f"Processing step {step}/{len(data_loader)}")
         data = data.to(device)
 
         with amp_autocast():
+            data.pos = data.pos.to(device)
             data.pos.requires_grad_(True)
+            logger.info("Starting model forward pass.")
+            def loss_fn(positions):
+                pred = model(
+                    batch=data.batch,
+                    f_in=data.x,
+                    edge_src=data.edge_src,
+                    edge_dst=data.edge_dst,
+                    pos=positions,
+                    edge_num=data.edge_num,
+                    device=device,
+                )
+                return pred.sum()
             pred = model(
                 batch=data.batch, 
                 f_in=data.x, 
@@ -122,39 +162,33 @@ def train_one_epoch_dx(
                 edge_num=data.edge_num, 
                 device=device
             )
-            pred = pred.view(-1)  
-
-            grad_outputs = torch.ones_like(pred)
-            grads = torch.autograd.grad(
-                pred, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True
-            )[0]
+            # loss = loss_fn(data.pos) 
+            logger.info("Starting gradient computation.")
+            grad_outputs = torch.ones_like(pred, device=device)
+            grads = torch.autograd.grad(pred, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True)[0]
 
             # 计算整个batch的 Hessian
-            hessian_matrix = compute_hessian_vectorized(
-                model=model,
-                inputs=data.pos,
-                batch=data.batch,
-                f_in=data.x,
-                edge_src=data.edge_src,
-                edge_dst=data.edge_dst,
-                edge_num=data.edge_num,
-                device=device,
-            )  # [N,3,N,3]
+            hessian_matrix = torch.autograd.functional.hessian(loss_fn, data.pos)
+            # hessian_matrix = torch.autograd.grad(grads, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True)[0]
+            N = data.pos.size(0)
+            hessian_matrix = hessian_matrix.view(N, 3, N, 3)
 
-            # 验证二阶导不为全0（即梯度没断）
-            num_samples = 3  # 选择 3 个随机值
+            num_samples = 10  # 选择 10 个随机值
             indices = torch.randperm(hessian_matrix.numel())[:num_samples]
             selected_values = hessian_matrix.view(-1)[indices]
-            # 将选择的值转换为字符串格式
             selected_values_str = "\n".join([f"{value.item():.4e}" for value in selected_values])
-            # 使用 logger 记录日志
-            logger.info("二阶导 hessian matrix (随机部分):\n%s", selected_values_str)
+            logger.info("Sampled Hessian values:\n%s", selected_values_str)
+            print(f"data.pos.grad: {data.pos.grad}")
+            print("看看单个样本的hessian的gradfn：")
+            trace_grad_fn(hessian_matrix)
 
             # 根据 batch 中每个图的节点进行分块匹配 target
             # data.batch: [N], 包含每个节点所属的图 id
             unique_graphs = data.batch.unique()  
             hessian_list = []
             node_count_list = []
+            if logger:
+                logger.info("Processing Hessian matrix for subgraphs.")
             for g_id in unique_graphs:
                 # 该图的节点mask
                 nodes_g = (data.batch == g_id)
@@ -178,30 +212,59 @@ def train_one_epoch_dx(
                     f"Dimension mismatch: hessian shape {hessian_final.shape}, "
                     f"target shape {data.force_constants_all.shape}"
                 )
-                        # 验证二阶导不为全0（即梯度没断）
-            num_samples = 3  # 选择 3 个随机值
-            indices = torch.randperm(hessian_final.numel())[:num_samples]
-            selected_values = hessian_final.view(-1)[indices]
-            # 将选择的值转换为字符串格式
-            selected_values_str = "\n".join([f"{value.item():.4e}" for value in selected_values])
-            # 使用 logger 记录日志
-            logger.info("最终二阶导 hessian matrix (随机部分):\n%s", selected_values_str)
-
+                
+            data.force_constants_all = data.force_constants_all.to(device)
             data.force_constants_all.requires_grad_(True)
             hessian_final.requires_grad_(True)
+            print("看看hessian_final的gradfn：")
+            trace_grad_fn(hessian_final)
 
             # 计算损失
-            loss = criterion(hessian_final, data.force_constants_all)
+            if logger:
+                logger.info("Computing loss.")
+            loss = criterion(hessian_final, data.force_constants_all).requires_grad_()
+            logger.info(f"loss的值：{loss}")
+            logger.info(f"Loss grad_fn: {loss.grad_fn}, requires_grad: {loss.requires_grad}")
+            trace_grad_fn(loss)
+
+
+            logger.info("Visualizing computation graph.")
+            # dot = make_dot(loss, params={"data.pos": data.pos})
+            # dot.render(f"computation_graph_step_{step}", format="pdf")        
 
         optimizer.zero_grad()
 
         if loss_scaler is not None:
             loss_scaler(loss, optimizer, parameters=model.parameters())
         else:
+            if logger:
+                logger.info("Performing backward pass and optimizer step.")
             loss.backward()
+            print(f"data.pos.grad: {data.pos.grad}")
+            # 检查模型参数的梯度是否存在非零值
+            # 如果所有梯度为零或 None，说明梯度未正确反向传播
+
+            for name, param in model.named_parameters():
+                # logger.info(f"{name} requires_grad: {param.requires_grad}")
+                if param.grad is not None:
+                    logger.info(f"{name} gradient norm: {param.grad.norm().item()}")
+                # else:
+                    # logger.info(f"{name} has no gradient!")
+
             if clip_grad is not None:
                 dispatch_clip_grad(model.parameters(), value=clip_grad, mode='norm')
             optimizer.step()
+            # 保存更新后的参数
+            after_params = [param.clone().detach() for param in model.parameters()]
+            # 比较参数是否发生变化
+            for before, after in zip(before_params, after_params):
+                if not torch.equal(before, after):
+                    logger.info("参数已更新")
+                    break
+            else:
+                logger.info("参数未更新")
+            before_params = after_params
+
 
         # 记录损失和MAE
         loss_metric.update(loss.item(), n=hessian_final.shape[0])
@@ -212,12 +275,11 @@ def train_one_epoch_dx(
 
         if step % print_freq == 0 and logger is not None:
             logger.info(
-                f"Train Epoch [{epoch}], Step [{step}/{len(data_loader)}], "
+                f"Epoch [{epoch}], Step [{step}/{len(data_loader)}], "
                 f"Loss: {loss_metric.avg:.4f}, MAE: {mae_metric.avg:.4f}"
             )
 
     return mae_metric.avg, loss_metric.avg
-
 
 
 def evaluate_dx(model, data_loader, device, amp_autocast=None, print_freq=100, logger=None):
@@ -231,64 +293,58 @@ def evaluate_dx(model, data_loader, device, amp_autocast=None, print_freq=100, l
     for step, data in enumerate(data_loader):
         data = data.to(device)
         
-        # 在评估阶段一般不需要记录梯度，但这里由于要计算 Hessian，需要使用 create_graph=True
-        # 不过在最终计算 loss 时，我们不需要对参数进行更新，所以 no_grad 可针对最终 loss 无影响
-        with torch.no_grad():
-            data.pos.requires_grad_(True)
-            with amp_autocast():
-                # 前向计算
-                pred = model(
-                    batch=data.batch,
-                    f_in=data.x,
-                    edge_src=data.edge_src,
-                    edge_dst=data.edge_dst,
-                    pos=data.pos,
-                    edge_num=data.edge_num,
-                    device=device
-                )
-                pred = pred.view(-1)
+        # 确保 data.pos 需要梯度
+        data.pos.requires_grad_(True)
+        
+        with amp_autocast():
+            # 前向计算
+            pred = model(
+                batch=data.batch,
+                f_in=data.x,
+                edge_src=data.edge_src,
+                edge_dst=data.edge_dst,
+                pos=data.pos,
+                edge_num=data.edge_num,
+                device=device
+            )
+            pred = pred.view(-1)
 
-                # 一阶梯度
-                grad_outputs = torch.ones_like(pred).to(device)
-                grads = torch.autograd.grad(
-                    outputs=pred,
-                    inputs=data.pos,
-                    grad_outputs=grad_outputs,
-                    create_graph=True,
-                    retain_graph=True,
-                    allow_unused=True
-                )[0]
+            # 一阶梯度
+            grad_outputs = torch.ones_like(pred)
+            grads = torch.autograd.grad(
+                pred, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True
+            )[0]
 
-                # 整批 Hessian 计算
-                hessian_matrix = compute_hessian_vectorized(
-                    model=model,
-                    inputs=data.pos,
-                    batch=data.batch,
-                    f_in=data.x,
-                    edge_src=data.edge_src,
-                    edge_dst=data.edge_dst,
-                    edge_num=data.edge_num,
-                    device=device,
-                )  # shape: [N,3,N,3]
+            # 整批 Hessian 计算
+            hessian_matrix = compute_hessian_vectorized(
+                model=model,
+                inputs=data.pos,
+                batch=data.batch,
+                f_in=data.x,
+                edge_src=data.edge_src,
+                edge_dst=data.edge_dst,
+                edge_num=data.edge_num,
+                device=device,
+            )  # shape: [N,3,N,3]
 
-            # 根据 batch 的子图划分 Hessian
-            unique_graphs = data.batch.unique()
-            hessian_list = []
-            for g_id in unique_graphs:
-                nodes_g = (data.batch == g_id)
-                # 提取该图子块 (n_g,3,n_g,3)
-                sub_hessian = hessian_matrix[nodes_g][:, :, nodes_g, :]
-                n_g = sub_hessian.size(0)
-                # 重塑成 (n_g², 9)
-                sub_hessian = sub_hessian.reshape(n_g * n_g, 9)
-                hessian_list.append(sub_hessian)
+        # 根据 batch 的子图划分 Hessian
+        unique_graphs = data.batch.unique()
+        hessian_list = []
+        for g_id in unique_graphs:
+            nodes_g = (data.batch == g_id)
+            # 提取该图子块 (n_g,3,n_g,3)
+            sub_hessian = hessian_matrix[nodes_g][:, :, nodes_g, :]
+            n_g = sub_hessian.size(0)
+            # 重塑成 (n_g², 9)
+            sub_hessian = sub_hessian.reshape(n_g * n_g, 9)
+            hessian_list.append(sub_hessian)
 
-            # 拼接所有子图的 Hessian 得到 (sum of n_g², 9)
-            hessian = torch.cat(hessian_list, dim=0)
+        # 拼接所有子图的 Hessian 得到 (sum of n_g², 9)
+        hessian = torch.cat(hessian_list, dim=0)
 
-            # 计算损失和MAE
-            loss = criterion(hessian, data.force_constants_all)
-            mae = torch.mean(torch.abs(hessian - data.force_constants_all))
+        # 计算损失和MAE
+        loss = criterion(hessian, data.force_constants_all)
+        mae = torch.mean(torch.abs(hessian - data.force_constants_all))
 
         loss_metric.update(loss.item(), n=hessian.shape[0])
         mae_metric.update(mae.item(), n=hessian.shape[0])
@@ -296,7 +352,7 @@ def evaluate_dx(model, data_loader, device, amp_autocast=None, print_freq=100, l
         # 打印日志
         if step % print_freq == 0 and logger:
             logger.info(
-                f"Evaluate Step [{step}/{len(data_loader)}], "
+                f"Step [{step}/{len(data_loader)}], "
                 f"Loss: {loss_metric.avg:.4f}, MAE: {mae_metric.avg:.4f}"
             )
 
@@ -422,3 +478,87 @@ def evaluate(model, data_loader, device, amp_autocast=None,
 
     return mae_metric.avg, loss_metric.avg
 
+def train_one_epoch_adam(
+    model: torch.nn.Module, 
+    criterion: torch.nn.Module,
+    data_loader: Iterable, 
+    optimizer: torch.optim.Optimizer,
+    device: torch.device, 
+    epoch: int, 
+    model_ema: Optional[ModelEma] = None,  
+    amp_autocast=None,
+    loss_scaler=None,
+    clip_grad=None,
+    print_freq: int = 50, 
+    logger=None,
+    beta2: float = 0.999,
+    eps: float = 1e-8
+):
+    model.train()
+    criterion.train()
+
+    loss_metric = AverageMeter()
+    mae_metric = AverageMeter()
+
+    vt_dict = {}  # 用于存储每个数据的`vt`
+
+    for step, data in enumerate(data_loader):
+        data = data.to(device)
+
+        with amp_autocast():
+            data.pos.requires_grad_(True)
+            pred = model(
+                batch=data.batch, 
+                f_in=data.x, 
+                edge_src=data.edge_src, 
+                edge_dst=data.edge_dst,
+                pos=data.pos, 
+                edge_num=data.edge_num, 
+                device=device
+            )
+            pred = pred.view(-1)  
+
+            grad_outputs = torch.ones_like(pred)
+            grads = torch.autograd.grad(
+                pred, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True
+            )[0]
+
+            # 初始化 vt 如果尚未存储
+            if step == 0 and data.pos.grad_fn is not None:
+                vt_dict = {name: torch.zeros_like(param) for name, param in model.named_parameters()}
+
+            # 更新 vt
+            for name, param in model.named_parameters():
+                if param.grad is not None:
+                    vt_dict[name] = beta2 * vt_dict[name] + (1 - beta2) * param.grad.pow(2)
+
+            # 近似Hessian对角线
+            approx_hessian = {name: vt.sqrt() + eps for name, vt in vt_dict.items()}
+
+            # 计算损失
+            loss = criterion(approx_hessian, data.force_constants_all)
+
+        optimizer.zero_grad()
+
+        if loss_scaler is not None:
+            loss_scaler(loss, optimizer, parameters=model.parameters())
+        else:
+            loss.backward()
+            if clip_grad is not None:
+                dispatch_clip_grad(model.parameters(), value=clip_grad, mode='norm')
+            optimizer.step()
+
+        # 记录损失和MAE
+        loss_metric.update(loss.item(), n=1)
+        mae_metric.update(
+            torch.mean(torch.abs(torch.cat(list(approx_hessian.values())) - data.force_constants_all)).item(), 
+            n=1
+        )
+
+        if step % print_freq == 0 and logger is not None:
+            logger.info(
+                f"Train Epoch [{epoch}], Step [{step}/{len(data_loader)}], "
+                f"Loss: {loss_metric.avg:.4f}, MAE: {mae_metric.avg:.4f}"
+            )
+
+    return mae_metric.avg, loss_metric.avg

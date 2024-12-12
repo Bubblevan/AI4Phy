@@ -1396,11 +1396,16 @@ class GraphAttentionTransformer_dx_v3(torch.nn.Module):
             torch.nn.init.constant_(m.weight, 1.0)
 
     def forward(self, f_in, edge_src, edge_dst, pos, edge_num, batch, device, **kwargs) -> torch.Tensor:
+        print(f"Initial data.pos.requires_grad: {pos.requires_grad}")
+        # print(f"data.pos.grad: {pos.grad}")
         # 计算距离矩阵
         diff = pos[:, None, :] - pos[None, :, :]
-        dist_matrix = torch.sqrt(torch.sum(diff**2, dim=-1) + 1e-10)
+        dist_matrix = torch.sqrt(torch.sum(diff**2, dim=-1) + 1e-10).to(device)
         threshold = 8
         max_neighbors = 32
+        edge_vec_list, distances_list = [], []
+        num_atoms_per_sample = torch.bincount(batch).tolist()
+        start_index = 0
 
         # 计算每个原子最近的 max_neighbors 个原子
         _, nearest_indices = dist_matrix.topk(k=max_neighbors + 1, largest=False, sorted=False)
@@ -1412,15 +1417,23 @@ class GraphAttentionTransformer_dx_v3(torch.nn.Module):
 
         # 创建掩码
         mask = (dist_matrix < mask_threshold[:, None]) & (dist_matrix > 1e-10)
-        mask.fill_diagonal_(False)
+        # mask.fill_diagonal_(False)
+        diagonal_mask = torch.eye(dist_matrix.size(0), dtype=torch.bool, device=device)
+        mask = mask & ~diagonal_mask
 
         # 提取边的索引
-        edge_src, edge_dst = mask.nonzero(as_tuple=True)
+        # edge_src, edge_dst = mask.nonzero(as_tuple=True)
+        edge_src, edge_dst = torch.where(mask)
         edge_vec = pos[edge_src] - pos[edge_dst]
         edge_attr = dist_matrix[edge_src, edge_dst]
 
         # 球谐函数
         edge_sh = o3.spherical_harmonics(l=self.irreps_edge_attr, x=edge_vec, normalize=True, normalization='component')
+        
+        # 打印中间变量的 requires_grad 属性
+        # print(f"edge_sh.requires_grad: {edge_sh.requires_grad}")
+        # print(f"edge_sh.grad: {edge_sh.grad}")
+
         edge_length_embedding = self.rbf(edge_attr)
 
         # 节点和边的嵌入
@@ -1428,9 +1441,19 @@ class GraphAttentionTransformer_dx_v3(torch.nn.Module):
         atom_embedding = self.atom_expand(f_in)
         edge_degree_embedding = self.edge_deg_embed(atom_embedding, edge_sh, edge_length_embedding, edge_src, edge_dst, batch)
 
+        # 打印中间变量的 requires_grad 属性
+        # print(f"atom_embedding.requires_grad: {atom_embedding.requires_grad}")
+        # print(f"atom_embedding.grad: {atom_embedding.grad}")
+        # print(f"edge_degree_embedding.requires_grad: {edge_degree_embedding.requires_grad}")
+        # print(f"edge_degree_embedding.grad: {edge_degree_embedding.grad}")
+
         # 消息传递
         node_features = atom_embedding + edge_degree_embedding
         node_attr = torch.ones_like(node_features.narrow(1, 0, 1))
+
+        # 打印中间变量的 requires_grad 属性
+        # print(f"node_features.requires_grad: {node_features.requires_grad}")
+        # print(f"node_features.grad: {node_features.grad}")
 
         for blk in self.blocks:
             node_features = blk(node_input=node_features, node_attr=node_attr, edge_src=edge_src, edge_dst=edge_dst, edge_attr=edge_sh, edge_scalars=edge_length_embedding, batch=batch)
@@ -1441,8 +1464,203 @@ class GraphAttentionTransformer_dx_v3(torch.nn.Module):
             node_features = self.out_dropout(node_features)
         edge_embedding = self.lrs(edge_length_embedding)
         node_features = node_features[edge_src] + node_features[edge_dst] + edge_embedding
+        
+        # 打印中间变量的 requires_grad 属性
+        # print(f"node_features.requires_grad (before head): {node_features.requires_grad}")
+        
         outputs = self.head(node_features)
+        if self.scale is not None:
+            outputs = self.scale * outputs
+        # 打印最终输出的 requires_grad 属性
+        # print(f"outputs.requires_grad: {outputs.requires_grad}")
+        # print(f"outputs.grad: {outputs.grad}")
+        
         return scatter_mean(outputs, batch[edge_src], dim=0)
+
+class GraphAttentionTransformer_dx_v4(torch.nn.Module):
+    def __init__(self,
+                 irreps_in='86x0e',
+                 irreps_out='1x0e',
+                 irreps_node_embedding='128x0e+64x1e+32x2e', num_layers=6,
+                 irreps_node_attr='1x0e', irreps_sh='1x0e+1x1e+1x2e',
+                 max_radius=5.0, number_of_basis=128, basis_type='gaussian', fc_neurons=[64, 64],
+                 irreps_feature='512x0e',
+                 irreps_head='32x0e+16x1o+8x2e', num_heads=4, irreps_pre_attn=None,
+                 rescale_degree=False, nonlinear_message=False,
+                 irreps_mlp_mid='128x0e+64x1e+32x2e',
+                 norm_layer='layer',
+                 alpha_drop=0.2, proj_drop=0.0, out_drop=0.0,
+                 drop_path_rate=0.0, edge_num=0,
+                 mean=None, std=None, scale=None, atomref=None):
+        super().__init__()
+
+        self.max_radius = max_radius
+        self.number_of_basis = number_of_basis
+        self.alpha_drop = alpha_drop
+        self.proj_drop = proj_drop
+        self.out_drop = out_drop
+        self.norm_layer = norm_layer
+        self.task_mean = mean
+        self.task_std = std
+        self.scale = scale
+        self.edge_num = edge_num
+        self.register_buffer('atomref', atomref)
+
+        self.irreps_node_attr = o3.Irreps(irreps_node_attr)
+        self.irreps_node_input = o3.Irreps(irreps_in)
+        self.irreps_node_embedding = o3.Irreps(irreps_node_embedding)
+        self.irreps_feature = o3.Irreps(irreps_feature)
+        self.num_layers = num_layers
+        self.irreps_edge_attr = o3.Irreps(irreps_sh) if irreps_sh is not None \
+            else o3.Irreps.spherical_harmonics(self.irreps_node_embedding.lmax)
+        self.fc_neurons = [self.number_of_basis] + fc_neurons
+        self.irreps_head = o3.Irreps(irreps_head)
+        self.num_heads = num_heads
+        self.irreps_pre_attn = irreps_pre_attn
+        self.rescale_degree = rescale_degree
+        self.nonlinear_message = nonlinear_message
+        self.irreps_mlp_mid = o3.Irreps(irreps_mlp_mid)
+        
+        # Layers
+        self.atom_embed = NodeEmbeddingNetwork(self.irreps_node_embedding, _MAX_ATOM_TYPE)
+        self.rbf = GaussianRadialBasisLayer(self.number_of_basis, cutoff=self.max_radius)
+        self.edge_deg_embed = EdgeDegreeEmbeddingNetwork(self.irreps_node_embedding, 
+            self.irreps_edge_attr, self.fc_neurons, _AVG_DEGREE)
+        self.blocks = torch.nn.ModuleList()
+        self.build_blocks()
+        
+        self.norm = get_norm_layer(self.norm_layer)(self.irreps_feature)
+        self.out_dropout = EquivariantDropout(self.irreps_feature, self.out_drop) if self.out_drop != 0.0 else None
+        self.head = torch.nn.Sequential(
+            LinearRS(self.irreps_feature, self.irreps_feature, rescale=_RESCALE), 
+            Activation(self.irreps_feature, acts=[torch.nn.SiLU()]),
+            LinearRS(self.irreps_feature, o3.Irreps(irreps_out), rescale=_RESCALE)
+        ) 
+        self.lrs = LinearRS(o3.Irreps('86x0e'), o3.Irreps('512x0e'), rescale=_RESCALE)
+        self.atom_expand = LinearRS(o3.Irreps('86x0e'), self.irreps_node_embedding, rescale=_RESCALE)
+        self.apply(self._init_weights)
+    
+    def build_blocks(self):
+        for i in range(self.num_layers):
+            irreps_block_output = self.irreps_node_embedding if i != (self.num_layers - 1) else self.irreps_feature
+            blk = TransBlock(
+                irreps_node_input=self.irreps_node_embedding,
+                irreps_node_attr=self.irreps_node_attr,
+                irreps_edge_attr=self.irreps_edge_attr,
+                irreps_node_output=irreps_block_output,
+                fc_neurons=self.fc_neurons,
+                irreps_head=self.irreps_head,
+                num_heads=self.num_heads,
+                irreps_pre_attn=self.irreps_pre_attn,
+                rescale_degree=self.rescale_degree,
+                nonlinear_message=self.nonlinear_message,
+                alpha_drop=self.alpha_drop,
+                proj_drop=self.proj_drop,
+                irreps_mlp_mid=self.irreps_mlp_mid,
+            )
+            self.blocks.append(blk)
+            
+    def _init_weights(self, m):
+        if isinstance(m, torch.nn.Linear):
+            if m.bias is not None:
+                torch.nn.init.constant_(m.bias, 0)
+        elif isinstance(m, torch.nn.LayerNorm):
+            torch.nn.init.constant_(m.bias, 0)
+            torch.nn.init.constant_(m.weight, 1.0)
+
+    def forward(self, f_in, edge_src, edge_dst, pos, edge_num, batch, device, **kwargs) -> torch.Tensor:
+        # 初始化一些列表，用于保存逐样本的计算结果
+        edge_vec_list, distances_list, edge_src_list, edge_dst_list = [], [], [], []
+
+        # 计算每个样本的原子数量
+        num_atoms_per_sample = torch.bincount(batch).tolist()
+        start_index = 0
+
+        for num_atoms in num_atoms_per_sample:
+            end_index = start_index + num_atoms
+
+            # 当前样本的原子位置
+            sample_pos = pos[start_index:end_index]  # Shape: (num_atoms, 3)
+
+            # 计算样本内的距离矩阵
+            diff = sample_pos[:, None, :] - sample_pos[None, :, :]
+            dist_matrix = torch.sqrt(torch.sum(diff**2, dim=-1) + 1e-10)  # Shape: (num_atoms, num_atoms)
+
+            # 限制邻居的数量和距离范围
+            max_neighbors = 32
+            threshold = 8
+            _, nearest_indices = dist_matrix.topk(k=max_neighbors + 1, largest=False, sorted=False)
+            nearest_distances = dist_matrix.gather(1, nearest_indices[:, 1:])  # 去掉自身的距离
+
+            # 创建掩码，限制最大邻居距离
+            max_neighbor_dist = nearest_distances.max(dim=1).values
+            mask_threshold = torch.minimum(max_neighbor_dist, torch.tensor(threshold, device=device))
+            mask = (dist_matrix < mask_threshold[:, None]) & (dist_matrix > 1e-10)
+
+            # 提取边索引和属性
+            edge_src_sample, edge_dst_sample = mask.nonzero(as_tuple=True)
+            edge_vec_sample = sample_pos[edge_src_sample] - sample_pos[edge_dst_sample]
+            edge_attr_sample = dist_matrix[edge_src_sample, edge_dst_sample]
+
+            # 保存样本内的边特性和索引
+            edge_vec_list.append(edge_vec_sample)
+            distances_list.append(edge_attr_sample)
+            edge_src_list.append(edge_src_sample + start_index)
+            edge_dst_list.append(edge_dst_sample + start_index)
+
+            start_index = end_index
+
+        # 将每个样本的边信息拼接到全局张量中
+        edge_vec = torch.cat(edge_vec_list, dim=0)  # Shape: (total_edges, 3)
+        edge_attr = torch.cat(distances_list, dim=0)  # Shape: (total_edges,)
+        edge_src = torch.cat(edge_src_list, dim=0)  # Shape: (total_edges,)
+        edge_dst = torch.cat(edge_dst_list, dim=0)  # Shape: (total_edges,)
+
+        # 球谐函数
+        edge_sh = o3.spherical_harmonics(
+            l=self.irreps_edge_attr, x=edge_vec, normalize=True, normalization='component'
+        )
+
+        # 节点嵌入
+        f_in = f_in.to(torch.float32)
+        atom_embedding = self.atom_expand(f_in)
+
+        # 边嵌入
+        edge_length_embedding = self.rbf(edge_attr)
+        edge_degree_embedding = self.edge_deg_embed(
+            atom_embedding, edge_sh, edge_length_embedding, edge_src, edge_dst, batch
+        )
+
+        # 消息传递
+        node_features = atom_embedding + edge_degree_embedding
+        node_attr = torch.ones_like(node_features.narrow(1, 0, 1))
+
+        for blk in self.blocks:
+            node_features = blk(
+                node_input=node_features,
+                node_attr=node_attr,
+                edge_src=edge_src,
+                edge_dst=edge_dst,
+                edge_attr=edge_sh,
+                edge_scalars=edge_length_embedding,
+                batch=batch
+            )
+
+        # 节点归一化和输出
+        node_features = self.norm(node_features, batch=batch)
+        if self.out_dropout is not None:
+            node_features = self.out_dropout(node_features)
+
+        edge_embedding = self.lrs(edge_length_embedding)
+        node_features = node_features[edge_src] + node_features[edge_dst] + edge_embedding
+        outputs = self.head(node_features)
+
+        if self.scale is not None:
+            outputs = self.scale * outputs
+
+        # 聚合样本级结果
+        edge_batch = batch[edge_src]
+        return scatter_mean(outputs, edge_batch, dim=0)
 
 
 
