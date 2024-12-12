@@ -21,6 +21,39 @@ from .fast_activation import Activation, Gate
 from .drop import EquivariantDropout, EquivariantScalarsDropout, GraphDropPath
 from .gaussian_rbf import GaussianRadialBasisLayer
 
+
+def trace_grad_fn(tensor, visited=None):
+    if visited is None:
+        visited = set()
+
+    # 如果当前张量是叶子节点，直接返回
+    if tensor.grad_fn is None:
+        print(f"Reached a leaf tensor: {tensor.shape}")
+        return
+
+    # 如果当前 grad_fn 已经被访问过，检测到循环
+    if tensor.grad_fn in visited:
+        print(f"Detected a cycle in the computation graph at grad_fn: {tensor.grad_fn}")
+        return
+
+    # 打印当前张量和 grad_fn
+    print(f"Current tensor: {tensor.shape}, grad_fn: {tensor.grad_fn}")
+    visited.add(tensor.grad_fn)
+
+    # 递归遍历 next_functions
+    for next_fn, _ in tensor.grad_fn.next_functions:
+        if next_fn is not None:
+            # 尝试获取 next_fn 的输入张量
+            try:
+                # 获取 next_fn 的输入张量
+                input_tensors = next_fn.next_inputs()
+                for input_tensor in input_tensors:
+                    trace_grad_fn(input_tensor, visited)
+            except AttributeError:
+                # 如果 next_fn 没有 next_inputs 方法，跳过
+                continue
+
+
 torch.set_printoptions(profile='full')
 
 _RESCALE = True
@@ -1396,11 +1429,18 @@ class GraphAttentionTransformer_dx_v3(torch.nn.Module):
             torch.nn.init.constant_(m.weight, 1.0)
 
     def forward(self, f_in, edge_src, edge_dst, pos, edge_num, batch, device, **kwargs) -> torch.Tensor:
-        print(f"Initial data.pos.requires_grad: {pos.requires_grad}")
-        # print(f"data.pos.grad: {pos.grad}")
+        # print(f"Initial data.pos.requires_grad: {pos.requires_grad}")
+        # trace_grad_fn(pos)
+
         # 计算距离矩阵
         diff = pos[:, None, :] - pos[None, :, :]
+        # print("看看diff的gradfn")
+        # trace_grad_fn(diff)
+
         dist_matrix = torch.sqrt(torch.sum(diff**2, dim=-1) + 1e-10).to(device)
+        # print("看看dist_matrix的gradfn")
+        # trace_grad_fn(dist_matrix)
+
         threshold = 8
         max_neighbors = 32
         edge_vec_list, distances_list = [], []
@@ -1417,46 +1457,49 @@ class GraphAttentionTransformer_dx_v3(torch.nn.Module):
 
         # 创建掩码
         mask = (dist_matrix < mask_threshold[:, None]) & (dist_matrix > 1e-10)
-        # mask.fill_diagonal_(False)
         diagonal_mask = torch.eye(dist_matrix.size(0), dtype=torch.bool, device=device)
         mask = mask & ~diagonal_mask
 
         # 提取边的索引
-        # edge_src, edge_dst = mask.nonzero(as_tuple=True)
         edge_src, edge_dst = torch.where(mask)
         edge_vec = pos[edge_src] - pos[edge_dst]
+        # print("看看edge_vec的gradfn")
+        # trace_grad_fn(edge_vec)
+
         edge_attr = dist_matrix[edge_src, edge_dst]
+        # print("看看edge_attr的gradfn")
+        # trace_grad_fn(edge_attr)
 
         # 球谐函数
         edge_sh = o3.spherical_harmonics(l=self.irreps_edge_attr, x=edge_vec, normalize=True, normalization='component')
-        
-        # 打印中间变量的 requires_grad 属性
-        # print(f"edge_sh.requires_grad: {edge_sh.requires_grad}")
-        # print(f"edge_sh.grad: {edge_sh.grad}")
+        # print("看看edge_sh的gradfn")
+        # trace_grad_fn(edge_sh)
 
         edge_length_embedding = self.rbf(edge_attr)
+        # print("看看edge_length_embedding的gradfn")
+        # trace_grad_fn(edge_length_embedding)
 
         # 节点和边的嵌入
         f_in = f_in.to(torch.float32)
         atom_embedding = self.atom_expand(f_in)
-        edge_degree_embedding = self.edge_deg_embed(atom_embedding, edge_sh, edge_length_embedding, edge_src, edge_dst, batch)
+        # print("看看atom_embedding的gradfn")
+        # trace_grad_fn(atom_embedding)
 
-        # 打印中间变量的 requires_grad 属性
-        # print(f"atom_embedding.requires_grad: {atom_embedding.requires_grad}")
-        # print(f"atom_embedding.grad: {atom_embedding.grad}")
-        # print(f"edge_degree_embedding.requires_grad: {edge_degree_embedding.requires_grad}")
-        # print(f"edge_degree_embedding.grad: {edge_degree_embedding.grad}")
+        edge_degree_embedding = self.edge_deg_embed(atom_embedding, edge_sh, edge_length_embedding, edge_src, edge_dst, batch)
+        # print("看看edge_degree_embedding的gradfn")
+        # trace_grad_fn(edge_degree_embedding)
 
         # 消息传递
         node_features = atom_embedding + edge_degree_embedding
-        node_attr = torch.ones_like(node_features.narrow(1, 0, 1))
+        # print("看看node_features的gradfn (before blocks)")
+        # trace_grad_fn(node_features)
 
-        # 打印中间变量的 requires_grad 属性
-        # print(f"node_features.requires_grad: {node_features.requires_grad}")
-        # print(f"node_features.grad: {node_features.grad}")
+        node_attr = torch.ones_like(node_features.narrow(1, 0, 1))
 
         for blk in self.blocks:
             node_features = blk(node_input=node_features, node_attr=node_attr, edge_src=edge_src, edge_dst=edge_dst, edge_attr=edge_sh, edge_scalars=edge_length_embedding, batch=batch)
+            # print("看看每个block之后的node_features的gradfn")
+            # trace_grad_fn(node_features)
 
         # 输出
         node_features = self.norm(node_features, batch=batch)
@@ -1464,18 +1507,26 @@ class GraphAttentionTransformer_dx_v3(torch.nn.Module):
             node_features = self.out_dropout(node_features)
         edge_embedding = self.lrs(edge_length_embedding)
         node_features = node_features[edge_src] + node_features[edge_dst] + edge_embedding
-        
-        # 打印中间变量的 requires_grad 属性
-        # print(f"node_features.requires_grad (before head): {node_features.requires_grad}")
-        
+        # print("看看forward里面决定outputs的node_features的gradfn")
+        # trace_grad_fn(node_features)
+
         outputs = self.head(node_features)
+        # print("看看forward里面经过head之前的outputs的gradfn")
+        # trace_grad_fn(outputs)
+
         if self.scale is not None:
             outputs = self.scale * outputs
-        # 打印最终输出的 requires_grad 属性
-        # print(f"outputs.requires_grad: {outputs.requires_grad}")
-        # print(f"outputs.grad: {outputs.grad}")
-        
-        return scatter_mean(outputs, batch[edge_src], dim=0)
+        # print("看看forward里面outputs的gradfn")
+        # trace_grad_fn(outputs)
+
+        scatter_mean_output = scatter_mean(outputs, batch[edge_src], dim=0)
+        # print("看看 scatter_mean 的输出和其 grad_fn")
+        # print(f"scatter_mean 的输出: {scatter_mean_output.shape}, grad_fn: {scatter_mean_output.grad_fn}")
+        # trace_grad_fn(scatter_mean_output)
+
+        # 返回 scatter_mean 的结果
+        return scatter_mean_output
+
 
 class GraphAttentionTransformer_dx_v4(torch.nn.Module):
     def __init__(self,

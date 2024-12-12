@@ -94,21 +94,32 @@ def compute_hessian_vectorized(model, inputs, batch, f_in, edge_src, edge_dst, e
 def trace_grad_fn(tensor, visited=None):
     if visited is None:
         visited = set()
+
+    # 如果当前张量是叶子节点，直接返回
     if tensor.grad_fn is None:
-        print(f"Reached a leaf tensor")
+        print(f"Reached a leaf tensor: {tensor.shape}")
         return
+
+    # 如果当前 grad_fn 已经被访问过，检测到循环
     if tensor.grad_fn in visited:
-        print("Detected a cycle in the computation graph.")
+        print(f"Detected a cycle in the computation graph at grad_fn: {tensor.grad_fn}")
         return
+
+    # 打印当前张量和 grad_fn
     print(f"Current tensor: {tensor.shape}, grad_fn: {tensor.grad_fn}")
     visited.add(tensor.grad_fn)
+
+    # 递归遍历 next_functions
     for next_fn, _ in tensor.grad_fn.next_functions:
         if next_fn is not None:
+            # 尝试获取 next_fn 的输入张量
             try:
-                var = getattr(next_fn, 'variable', None)
-                if var is not None:
-                    trace_grad_fn(var, visited)
+                # 获取 next_fn 的输入张量
+                input_tensors = next_fn.next_inputs()
+                for input_tensor in input_tensors:
+                    trace_grad_fn(input_tensor, visited)
             except AttributeError:
+                # 如果 next_fn 没有 next_inputs 方法，跳过
                 continue
 
 def train_one_epoch_dx(
@@ -133,76 +144,164 @@ def train_one_epoch_dx(
 
     loss_metric = AverageMeter()
     mae_metric = AverageMeter()
-
+    print("Inspecting data_loader contents:")
+    for idx, batch in enumerate(data_loader):
+        print(f"Batch {idx}:")
+        print(f"  Batch data.batch.unique() = {batch.batch.unique()}")
+        print(f"  Batch pos.shape = {batch.pos.shape}")
+        # if idx >= 2:  # 仅打印前三个 batch，避免过多输出
+        #     break
     for step, data in enumerate(data_loader):
         logger.info(f"Processing step {step}/{len(data_loader)}")
         data = data.to(device)
+        data.pos.requires_grad_(True)
 
         with amp_autocast():
-            data.pos = data.pos.to(device)
-            data.pos.requires_grad_(True)
-            logger.info("Starting model forward pass.")
-            def loss_fn(positions):
-                pred = model(
-                    batch=data.batch,
-                    f_in=data.x,
-                    edge_src=data.edge_src,
-                    edge_dst=data.edge_dst,
-                    pos=positions,
-                    edge_num=data.edge_num,
-                    device=device,
-                )
-                return pred.sum()
-            pred = model(
-                batch=data.batch, 
-                f_in=data.x, 
-                edge_src=data.edge_src, 
-                edge_dst=data.edge_dst,
-                pos=data.pos, 
-                edge_num=data.edge_num, 
-                device=device
-            )
-            # loss = loss_fn(data.pos) 
-            logger.info("Starting gradient computation.")
-            grad_outputs = torch.ones_like(pred, device=device)
-            grads = torch.autograd.grad(pred, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True)[0]
 
-            # 计算整个batch的 Hessian
-            hessian_matrix = torch.autograd.functional.hessian(loss_fn, data.pos)
-            # hessian_matrix = torch.autograd.grad(grads, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True)[0]
-            N = data.pos.size(0)
-            hessian_matrix = hessian_matrix.view(N, 3, N, 3)
+            # pred = model(
+            #     batch=data.batch, 
+            #     f_in=data.x, 
+            #     edge_src=data.edge_src, 
+            #     edge_dst=data.edge_dst,
+            #     pos=data.pos, 
+            #     edge_num=data.edge_num, 
+            #     device=device
+            # )
+            # pred = pred.squeeze() # shape: [batchsize, ]
+            # grad_outputs = torch.ones_like(pred, device=device)
+            # grads = torch.autograd.grad(pred, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True)[0]
+            print(f"data.batch: {data.batch}")
+            print(f"data.batch.unique(): {data.batch.unique()}")
+            batch_hessians = []
+            for sample_idx in data.batch.unique():
+                sample_mask = data.batch == sample_idx
+                sample_pos = data.pos[sample_mask]
+                sample_pos.requires_grad_(True)
+                print(f"Sample {sample_idx}: pos.shape = {sample_pos.shape}")
 
-            num_samples = 10  # 选择 10 个随机值
-            indices = torch.randperm(hessian_matrix.numel())[:num_samples]
-            selected_values = hessian_matrix.view(-1)[indices]
-            selected_values_str = "\n".join([f"{value.item():.4e}" for value in selected_values])
-            logger.info("Sampled Hessian values:\n%s", selected_values_str)
-            print(f"data.pos.grad: {data.pos.grad}")
-            print("看看单个样本的hessian的gradfn：")
-            trace_grad_fn(hessian_matrix)
+                # sample_grads = grads[sample_mask]
+                logger.info("Starting model forward pass.")
 
-            # 根据 batch 中每个图的节点进行分块匹配 target
-            # data.batch: [N], 包含每个节点所属的图 id
-            unique_graphs = data.batch.unique()  
-            hessian_list = []
-            node_count_list = []
-            if logger:
-                logger.info("Processing Hessian matrix for subgraphs.")
-            for g_id in unique_graphs:
-                # 该图的节点mask
-                nodes_g = (data.batch == g_id)
-                # 提取子图的 Hessian 子块
-                sub_hessian = hessian_matrix[nodes_g][:, :, nodes_g, :]
-                # sub_hessian shape: (n_g,3,n_g,3)
-                n_g = sub_hessian.size(0)
-                # 重塑为 (n_g^2, 9)
-                sub_hessian = sub_hessian.reshape(n_g * n_g, 9)
-                hessian_list.append(sub_hessian)
-                node_count_list.append(n_g)
+                # sample_pred = model(
+                #     batch=data.batch[sample_mask],
+                #     f_in=data.x[sample_mask],
+                #     edge_src=data.edge_src,
+                #     edge_dst=data.edge_dst,
+                #     pos=sample_pos,
+                #     edge_num=data.edge_num,
+                #     device=device,
+                # )
+                # print("看看sample_pred的gradfn")
+                # print(sample_pred.grad)
+                # trace_grad_fn(sample_pred)
+                # sample_pred = sample_pred.squeeze()
+                # sample_pred.requires_grad_(True)
+                # trace_grad_fn(sample_pred)
 
-            # 将所有子图的 Hessian 拼接，形成 (sum(n_g^2), 9) 的张量
-            hessian_final = torch.cat(hessian_list, dim=0)
+                logger.info("Starting gradient computation.")
+                # grad_outputs = torch.ones_like(sample_pred, device=device, requires_grad=True)
+                # sample_grads = torch.autograd.grad(
+                #     sample_pred, sample_pos, 
+                #     grad_outputs=grad_outputs, 
+                #     create_graph=True, 
+                #     retain_graph=True, 
+                #     allow_unused=False  # 检查计算图连接是否正确
+                # )[0]
+                # print(sample_grads)
+                # print(f"grad_outputs.shape: {grad_outputs.shape}")
+                # print(f"sample_grads.shape: {sample_grads.shape}")
+                # print("看看一阶导sample_grads的gradfn")
+                # print(sample_grads.grad)
+                # trace_grad_fn(sample_grads)
+                # print(f"sample_grads.requires_grad: {sample_grads.requires_grad}")
+                # print(f"sample_pos.requires_grad: {sample_pos.requires_grad}")
+
+                n = sample_pos.size(0)
+                print(f"逐样本处理的这个样本的原子数为: {n}")
+                def model_pred(pos):
+                    sample_pred = model(
+                        batch=data.batch[sample_mask],
+                        f_in=data.x[sample_mask],
+                        edge_src=data.edge_src,
+                        edge_dst=data.edge_dst,
+                        pos=pos,
+                        edge_num=data.edge_num,
+                        device=device,
+                    )
+                    return sample_pred.sum()
+
+                logger.info("Starting Hessian computation using functional API.")
+                hessian = torch.autograd.functional.hessian(model_pred, sample_pos, create_graph=True)
+                # hessian = torch.autograd.functional.hessian(
+                #     lambda pos: model(
+                #         batch=data.batch[sample_mask],
+                #         f_in=data.x[sample_mask],
+                #         edge_src=data.edge_src,
+                #         edge_dst=data.edge_dst,
+                #         pos=sample_pos,
+                #         edge_num=data.edge_num,
+                #         device=device,
+                #     ).squeeze(),
+                #     sample_pos,
+                #     create_graph=True
+                # )
+                # hessian = torch.zeros(n, n, 3, 3, requires_grad=True).to(device) 
+                # for k in range(3):  # x, y, z components
+                #     grad_outputs = torch.zeros_like(sample_grads)
+                #     grad_outputs[:, k] = 1.0
+                #     grad1 = torch.autograd.grad(
+                #         sample_grads, sample_pos,
+                #         grad_outputs=grad_outputs,
+                #         create_graph=True,
+                #         retain_graph=True,
+                #         allow_unused=False
+                #     )[0]
+                #     if grad1 is not None:
+                #         hessian[:, :, :, k] = grad1.unsqueeze(1) 
+                hessian = hessian.view(n, 3, n, 3).permute(0, 2, 1, 3).contiguous()
+                hessian = hessian.view(-1, 9)
+
+                num_samples = 10  # 选择 10 个随机值
+                indices = torch.randperm(hessian.numel())[:num_samples]
+                selected_values = hessian.view(-1)[indices]
+                selected_values_str = "\n".join([f"{value.item():.4e}" for value in selected_values])
+                logger.info("Sampled Hessian values:\n%s", selected_values_str)
+                print(f"data.pos.grad: {data.pos.grad}")
+                print("看看单个样本的hessian的gradfn：")
+                trace_grad_fn(hessian)
+
+                batch_hessians.append(hessian)
+
+            hessian_final = torch.cat(batch_hessians, dim=0)
+            hessian_final.requires_grad_(True)
+
+            # # 计算整个batch的 Hessian
+            # hessian_matrix = torch.autograd.functional.hessian(loss_fn, data.pos)
+            # # hessian_matrix = torch.autograd.grad(grads, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True)[0]
+            # N = data.pos.size(0)
+            # hessian_matrix = hessian_matrix.view(N, 3, N, 3)
+
+            # # 根据 batch 中每个图的节点进行分块匹配 target
+            # # data.batch: [N], 包含每个节点所属的图 id
+            # unique_graphs = data.batch.unique()  
+            # hessian_list = []
+            # node_count_list = []
+            # if logger:
+            #     logger.info("Processing Hessian matrix for subgraphs.")
+            # for g_id in unique_graphs:
+            #     # 该图的节点mask
+            #     nodes_g = (data.batch == g_id)
+            #     # 提取子图的 Hessian 子块
+            #     sub_hessian = hessian_matrix[nodes_g][:, :, nodes_g, :]
+            #     # sub_hessian shape: (n_g,3,n_g,3)
+            #     n_g = sub_hessian.size(0)
+            #     # 重塑为 (n_g^2, 9)
+            #     sub_hessian = sub_hessian.reshape(n_g * n_g, 9)
+            #     hessian_list.append(sub_hessian)
+            #     node_count_list.append(n_g)
+
+            # # 将所有子图的 Hessian 拼接，形成 (sum(n_g^2), 9) 的张量
+            # hessian_final = torch.cat(hessian_list, dim=0)
 
             # force_constants_all 应该同样是按照每个子图的 Hessian 块依次排列
             # 确保 target 和 hessian_final 的维度对应。假设 data.force_constants_all
@@ -215,7 +314,6 @@ def train_one_epoch_dx(
                 
             data.force_constants_all = data.force_constants_all.to(device)
             data.force_constants_all.requires_grad_(True)
-            hessian_final.requires_grad_(True)
             print("看看hessian_final的gradfn：")
             trace_grad_fn(hessian_final)
 
@@ -253,13 +351,25 @@ def train_one_epoch_dx(
 
             if clip_grad is not None:
                 dispatch_clip_grad(model.parameters(), value=clip_grad, mode='norm')
+            
             optimizer.step()
+
+            # 检查优化器状态
+            for group in optimizer.param_groups:
+                for p in group['params']:
+                    if p.grad is not None:
+                        logger.info(f"Optimizer state for param {id(p)}:", optimizer.state[p])
+            
             # 保存更新后的参数
             after_params = [param.clone().detach() for param in model.parameters()]
             # 比较参数是否发生变化
-            for before, after in zip(before_params, after_params):
+            for idx, (before, after) in enumerate(zip(before_params, after_params)):
                 if not torch.equal(before, after):
-                    logger.info("参数已更新")
+                    logger.info(f"参数已更新: 参数索引 {idx}")
+                    param_name = list(model.state_dict().keys())[idx]
+                    logger.info(f"更新的参数名称: {param_name}")
+                    logger.info(f"更新前的参数值: {before}")
+                    logger.info(f"更新后的参数值: {after}")
                     break
             else:
                 logger.info("参数未更新")

@@ -129,63 +129,63 @@ def get_args_parser():
 
     return parser
 
-def custom_collate(batch):
-    # Initialize lists to hold the concatenated results
-    force_constants_all_list = []
-    x_list = []
-    pos_list = []
-    edge_src_list = []
-    edge_dst_list = []
-    edge_attr_list = []
-    edge_vec_list = []
-    edge_index_list = []
-    eigenvalues_list = []
-    eigenvectors_list = []
+# def custom_collate(batch):
+#     # Initialize lists to hold the concatenated results
+#     force_constants_all_list = []
+#     x_list = []
+#     pos_list = []
+#     edge_src_list = []
+#     edge_dst_list = []
+#     edge_attr_list = []
+#     edge_vec_list = []
+#     edge_index_list = []
+#     eigenvalues_list = []
+#     eigenvectors_list = []
 
-    total_atoms = 0
+#     total_atoms = 0
 
-    for data in batch:
-        num_atoms = data.pos.shape[0]
-        print(f"Sample {data} atom count: {num_atoms}")
-        print(f"x.shape: {data.x.shape}, pos.shape: {data.pos.shape}, force_constants_all.shape: {data.force_constants_all.shape}")
+#     for data in batch:
+#         num_atoms = data.pos.shape[0]
+#         print(f"Sample {data} atom count: {num_atoms}")
+#         print(f"x.shape: {data.x.shape}, pos.shape: {data.pos.shape}, force_constants_all.shape: {data.force_constants_all.shape}")
 
-        force_constants_all_list.append(data.force_constants_all)
-        x_list.append(data.x)
-        pos_list.append(data.pos)
-        edge_src_list.append(data.edge_src)
-        edge_dst_list.append(data.edge_dst)
-        edge_attr_list.append(data.edge_attr)
-        edge_vec_list.append(data.edge_vec)
-        edge_index_list.append(data.edge_index + total_atoms)  # Shift indices by total_atoms
-        eigenvalues_list.append(data.eigenvalues)
-        eigenvectors_list.append(data.eigenvectors)
+#         force_constants_all_list.append(data.force_constants_all)
+#         x_list.append(data.x)
+#         pos_list.append(data.pos)
+#         edge_src_list.append(data.edge_src)
+#         edge_dst_list.append(data.edge_dst)
+#         edge_attr_list.append(data.edge_attr)
+#         edge_vec_list.append(data.edge_vec)
+#         edge_index_list.append(data.edge_index + total_atoms)  # Shift indices by total_atoms
+#         eigenvalues_list.append(data.eigenvalues)
+#         eigenvectors_list.append(data.eigenvectors)
 
-        total_atoms += num_atoms
+#         total_atoms += num_atoms
 
-    # Concatenate and check dimensions before doing it
-    try:
-        force_constants_all = torch.cat(force_constants_all_list, dim=0)
-        x = torch.cat(x_list, dim=0)
-        pos = torch.cat(pos_list, dim=0)
-        edge_src = torch.cat(edge_src_list, dim=0)
-        edge_dst = torch.cat(edge_dst_list, dim=0)
-        edge_attr = torch.cat(edge_attr_list, dim=0)
-        edge_vec = torch.cat(edge_vec_list, dim=0)
-        edge_index = torch.cat(edge_index_list, dim=1)
-        eigenvalues = torch.cat(eigenvalues_list, dim=0)
-        eigenvectors = torch.cat(eigenvectors_list, dim=0)
-    except Exception as e:
-        print(f"Error during concatenation: {e}")
-        return None
+#     # Concatenate and check dimensions before doing it
+#     try:
+#         force_constants_all = torch.cat(force_constants_all_list, dim=0)
+#         x = torch.cat(x_list, dim=0)
+#         pos = torch.cat(pos_list, dim=0)
+#         edge_src = torch.cat(edge_src_list, dim=0)
+#         edge_dst = torch.cat(edge_dst_list, dim=0)
+#         edge_attr = torch.cat(edge_attr_list, dim=0)
+#         edge_vec = torch.cat(edge_vec_list, dim=0)
+#         edge_index = torch.cat(edge_index_list, dim=1)
+#         eigenvalues = torch.cat(eigenvalues_list, dim=0)
+#         eigenvectors = torch.cat(eigenvectors_list, dim=0)
+#     except Exception as e:
+#         print(f"Error during concatenation: {e}")
+#         return None
 
-    # Return the batch
-    batch_data = Data(x=x, edge_src=edge_src, edge_dst=edge_dst,
-                      pos=pos, force_constants_all=force_constants_all,
-                      edge_attr=edge_attr, edge_vec=edge_vec,
-                      edge_index=edge_index, eigenvalues=eigenvalues,
-                      eigenvectors=eigenvectors)
+#     # Return the batch
+#     batch_data = Data(x=x, edge_src=edge_src, edge_dst=edge_dst,
+#                       pos=pos, force_constants_all=force_constants_all,
+#                       edge_attr=edge_attr, edge_vec=edge_vec,
+#                       edge_index=edge_index, eigenvalues=eigenvalues,
+#                       eigenvectors=eigenvectors)
 
-    return batch_data
+#     return batch_data
 
 
 def main(args):
@@ -236,23 +236,29 @@ def main(args):
                 )
         train_loader = DataLoader(train_dataset, batch_size=args.batch_size, 
                 sampler=sampler_train, num_workers=args.workers, pin_memory=args.pin_mem, 
-                drop_last=True, collate_fn=custom_collate)
+                drop_last=True)
     else:
         train_loader = DataLoader(train_dataset, batch_size=args.batch_size, 
                 shuffle=True, num_workers=args.workers, pin_memory=args.pin_mem, 
-                drop_last=True, collate_fn=custom_collate)
+                drop_last=True)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size,num_workers=args.workers)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size,num_workers=args.workers)
     
-    for batch in train_loader:
+    for batch in enumerate(train_loader):
         print(batch)
-        break  # 只查看第一个批次
+        # print(f"Loaded batch pos.shape: {batch.pos.shape}")
+
+        # break  # 只查看第一个批次
+        # for sample_idx in batch.batch.unique():
+        #     sample_mask = batch.batch == sample_idx
+        #     sample_pos = batch.pos[sample_mask]
+        #     print(f"  Sample {sample_idx}: pos.shape = {sample_pos.shape}")
+        # break
 
     # since dataset needs random 
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
-    
-    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
     # Print data attributes and dimensions
     # for step, data in enumerate(train_loader):
     #     print(f"Batch {step + 1}:")
