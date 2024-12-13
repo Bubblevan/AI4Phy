@@ -248,7 +248,7 @@ def main(args):
         print(batch)
         # print(f"Loaded batch pos.shape: {batch.pos.shape}")
 
-        # break  # 只查看第一个批次
+        break  # 只查看第一个批次
         # for sample_idx in batch.batch.unique():
         #     sample_mask = batch.batch == sample_idx
         #     sample_pos = batch.pos[sample_mask]
@@ -325,7 +325,7 @@ def main(args):
         epoch_error = []
         lr_scheduler.step(epoch)
 
-        train_err, train_loss = train_one_epoch_dx(
+        train_err, train_loss = train_one_epoch_adam(
             model=model, criterion=criterion, 
             data_loader=train_loader, optimizer=optimizer,
             device=device, epoch=epoch, model_ema=model_ema, 

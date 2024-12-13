@@ -1447,6 +1447,9 @@ class GraphAttentionTransformer_dx_v3(torch.nn.Module):
         num_atoms_per_sample = torch.bincount(batch).tolist()
         start_index = 0
 
+        for num_atoms in num_atoms_per_sample:
+            end_index = start_index + num_atoms
+
         # 计算每个原子最近的 max_neighbors 个原子
         _, nearest_indices = dist_matrix.topk(k=max_neighbors + 1, largest=False, sorted=False)
         nearest_distances = dist_matrix.gather(1, nearest_indices[:, 1:])  # 去掉对角线

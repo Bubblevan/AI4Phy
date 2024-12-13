@@ -10,8 +10,10 @@ from concurrent.futures import ThreadPoolExecutor
 import torch_geometric
 from nets.loss import FrobeniusNormLoss,EigenLoss
 from torch.autograd.functional import jacobian, hessian
+from torch.optim import Optimizer
 # from torchviz import make_dot
 import logging
+import random
 
 ModelEma = ModelEmaV2
 
@@ -408,56 +410,95 @@ def evaluate_dx(model, data_loader, device, amp_autocast=None, print_freq=100, l
         
         with amp_autocast():
             # 前向计算
-            pred = model(
-                batch=data.batch,
-                f_in=data.x,
-                edge_src=data.edge_src,
-                edge_dst=data.edge_dst,
-                pos=data.pos,
-                edge_num=data.edge_num,
-                device=device
-            )
-            pred = pred.view(-1)
+            # pred = model(
+            #     batch=data.batch,
+            #     f_in=data.x,
+            #     edge_src=data.edge_src,
+            #     edge_dst=data.edge_dst,
+            #     pos=data.pos,
+            #     edge_num=data.edge_num,
+            #     device=device
+            # )
+            # pred = pred.view(-1)
+            batch_hessians = []
+            for sample_idx in data.batch.unique():
+                sample_mask = data.batch == sample_idx
+                sample_pos = data.pos[sample_mask]
+                sample_pos.requires_grad_(True)
+                print(f"Sample {sample_idx}: pos.shape = {sample_pos.shape}")
+                n = sample_pos.size(0)
+                print(f"逐样本处理的这个样本的原子数为: {n}")
+                def model_pred(pos):
+                    sample_pred = model(
+                        batch=data.batch[sample_mask],
+                        f_in=data.x[sample_mask],
+                        edge_src=data.edge_src,
+                        edge_dst=data.edge_dst,
+                        pos=pos,
+                        edge_num=data.edge_num,
+                        device=device,
+                    )
+                    return sample_pred.sum()
 
+                logger.info("Starting Hessian computation using functional API.")
+                # hessian = torch.autograd.functional.hessian(model_pred, sample_pos, create_graph=True)
+                hessian = torch.autograd.functional.hessian(model_pred, sample_pos)
+
+                hessian = hessian.view(n, 3, n, 3).permute(0, 2, 1, 3).contiguous()
+                hessian = hessian.view(-1, 9)
+
+                num_samples = 10  # 选择 10 个随机值
+                indices = torch.randperm(hessian.numel())[:num_samples]
+                selected_values = hessian.view(-1)[indices]
+                selected_values_str = "\n".join([f"{value.item():.4e}" for value in selected_values])
+                logger.info("Sampled Hessian values:\n%s", selected_values_str)
+                print(f"data.pos.grad: {data.pos.grad}")
+                print("看看单个样本的hessian的gradfn：")
+                trace_grad_fn(hessian)
+
+                batch_hessians.append(hessian)
+
+            hessian_final = torch.cat(batch_hessians, dim=0)
+            hessian_final.requires_grad_(True)
             # 一阶梯度
-            grad_outputs = torch.ones_like(pred)
-            grads = torch.autograd.grad(
-                pred, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True
-            )[0]
+            # grad_outputs = torch.ones_like(pred)
+            # grads = torch.autograd.grad(
+            #     pred, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True
+            # )[0]
 
             # 整批 Hessian 计算
-            hessian_matrix = compute_hessian_vectorized(
-                model=model,
-                inputs=data.pos,
-                batch=data.batch,
-                f_in=data.x,
-                edge_src=data.edge_src,
-                edge_dst=data.edge_dst,
-                edge_num=data.edge_num,
-                device=device,
-            )  # shape: [N,3,N,3]
+            # hessian_matrix = compute_hessian_vectorized(
+            #     model=model,
+            #     inputs=data.pos,
+            #     batch=data.batch,
+            #     f_in=data.x,
+            #     edge_src=data.edge_src,
+            #     edge_dst=data.edge_dst,
+            #     edge_num=data.edge_num,
+            #     device=device,
+            # )  # shape: [N,3,N,3]
 
-        # 根据 batch 的子图划分 Hessian
-        unique_graphs = data.batch.unique()
-        hessian_list = []
-        for g_id in unique_graphs:
-            nodes_g = (data.batch == g_id)
-            # 提取该图子块 (n_g,3,n_g,3)
-            sub_hessian = hessian_matrix[nodes_g][:, :, nodes_g, :]
-            n_g = sub_hessian.size(0)
-            # 重塑成 (n_g², 9)
-            sub_hessian = sub_hessian.reshape(n_g * n_g, 9)
-            hessian_list.append(sub_hessian)
+        # # 根据 batch 的子图划分 Hessian
+        # unique_graphs = data.batch.unique()
+        # hessian_list = []
+        # for g_id in unique_graphs:
+        #     nodes_g = (data.batch == g_id)
+        #     # 提取该图子块 (n_g,3,n_g,3)
+        #     sub_hessian = hessian_matrix[nodes_g][:, :, nodes_g, :]
+        #     n_g = sub_hessian.size(0)
+        #     # 重塑成 (n_g², 9)
+        #     sub_hessian = sub_hessian.reshape(n_g * n_g, 9)
+        #     hessian_list.append(sub_hessian)
 
-        # 拼接所有子图的 Hessian 得到 (sum of n_g², 9)
-        hessian = torch.cat(hessian_list, dim=0)
+        # # 拼接所有子图的 Hessian 得到 (sum of n_g², 9)
+        # hessian = torch.cat(hessian_list, dim=0)
 
         # 计算损失和MAE
-        loss = criterion(hessian, data.force_constants_all)
-        mae = torch.mean(torch.abs(hessian - data.force_constants_all))
+        loss = criterion(hessian_final, data.force_constants_all)
+        mae = torch.mean(torch.abs(hessian_final - data.force_constants_all))
 
-        loss_metric.update(loss.item(), n=hessian.shape[0])
-        mae_metric.update(mae.item(), n=hessian.shape[0])
+        loss_metric.update(loss.item(), n=hessian_final.shape[0])
+        mae_metric.update(mae.item(), n=hessian_final.shape[0])
 
         # 打印日志
         if step % print_freq == 0 and logger:
@@ -512,7 +553,8 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     clip_grad=None,
                     print_freq: int = 100, 
                     logger=None):
-    
+    # 保存初始模型参数
+    before_params = [param.clone().detach() for param in model.parameters()]
     model.train()
     criterion.train()
     
@@ -539,7 +581,22 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                 dispatch_clip_grad(model.parameters(), 
                     value=clip_grad, mode='norm')
             optimizer.step()
-        
+            # 保存更新后的参数
+            after_params = [param.clone().detach() for param in model.parameters()]
+            # 比较参数是否发生变化
+            for idx, (before, after) in enumerate(zip(before_params, after_params)):
+                if not torch.equal(before, after):
+                    if logger is not None:
+                        logger.info(f"参数已更新: 参数索引 {idx}")
+                        param_name = list(model.state_dict().keys())[idx]
+                        logger.info(f"更新的参数名称: {param_name}")
+                        # logger.info(f"更新前的参数值: {before}")
+                        # logger.info(f"更新后的参数值: {after}")
+                    break
+            else:
+                if logger is not None:
+                    logger.info("参数未更新")
+            before_params = after_params
         loss_metric.update(loss.item(), n=pred.shape[0])
 
         mae_metric.update(torch.mean(torch.abs(pred-data.force_constants)).item(), n=pred.shape[0])
@@ -592,82 +649,155 @@ def train_one_epoch_adam(
     model: torch.nn.Module, 
     criterion: torch.nn.Module,
     data_loader: Iterable, 
-    optimizer: torch.optim.Optimizer,
+    optimizer: Optimizer,
     device: torch.device, 
     epoch: int, 
-    model_ema: Optional[ModelEma] = None,  
+    model_ema: Optional['ModelEma'] = None,  # 假设 ModelEma 已定义
     amp_autocast=None,
     loss_scaler=None,
     clip_grad=None,
     print_freq: int = 50, 
-    logger=None,
-    beta2: float = 0.999,
-    eps: float = 1e-8
+    logger=None
 ):
+    # 保存初始模型参数
+    before_params = [param.clone().detach() for param in model.parameters()]
     model.train()
     criterion.train()
 
     loss_metric = AverageMeter()
     mae_metric = AverageMeter()
 
-    vt_dict = {}  # 用于存储每个数据的`vt`
-
     for step, data in enumerate(data_loader):
         data = data.to(device)
+        data.pos.requires_grad_(True)
+
+        # optimizer.zero_grad()
 
         with amp_autocast():
-            data.pos.requires_grad_(True)
-            pred = model(
-                batch=data.batch, 
-                f_in=data.x, 
-                edge_src=data.edge_src, 
-                edge_dst=data.edge_dst,
-                pos=data.pos, 
-                edge_num=data.edge_num, 
-                device=device
-            )
-            pred = pred.view(-1)  
+            batch_hessians = []
+            for sample_idx in data.batch.unique():
+                sample_mask = data.batch == sample_idx
+                sample_pos = data.pos[sample_mask]
+                # print(f"sample_idx:{sample_idx};sample_mask:{sample_mask};sample_pos:{sample_pos}")
+                n = sample_pos.size(0)
+                print(f"当前样本的原子数为：{n}")
 
-            grad_outputs = torch.ones_like(pred)
-            grads = torch.autograd.grad(
-                pred, data.pos, grad_outputs=grad_outputs, create_graph=True, retain_graph=True
-            )[0]
 
-            # 初始化 vt 如果尚未存储
-            if step == 0 and data.pos.grad_fn is not None:
-                vt_dict = {name: torch.zeros_like(param) for name, param in model.named_parameters()}
+                sample_pred = model(
+                        batch=data.batch[sample_mask],
+                        f_in=data.x[sample_mask],
+                        edge_src=data.edge_src,
+                        edge_dst=data.edge_dst,
+                        pos=sample_pos,
+                        edge_num=data.edge_num,
+                        device=device,
+                    )
+                print(f"model_pred的gradfn为：{sample_pred.grad_fn}")
+                # print(sample_pred.shape)
+                # print(sample_pred)
 
-            # 更新 vt
-            for name, param in model.named_parameters():
-                if param.grad is not None:
-                    vt_dict[name] = beta2 * vt_dict[name] + (1 - beta2) * param.grad.pow(2)
+                # 计算梯度
+                grads = torch.autograd.grad(
+                    outputs=sample_pred.sum(),
+                    inputs=sample_pos,
+                    # grad_outputs=torch.ones_like(sample_pred),
+                    create_graph=True,
+                    retain_graph=True,
+                )[0]  # grads 的形状: (n, 3)
+                print(f"grads的gradfn为：{grads.grad_fn}")
+                # print(grads)
 
-            # 近似Hessian对角线
-            approx_hessian = {name: vt.sqrt() + eps for name, vt in vt_dict.items()}
+                # 计算梯度的平方并平均
+                square_grads = grads.pow(2)  # (n, 3)
+                print(f"square_grads的gradfn为：{square_grads.grad_fn}")
+                v_t = torch.mean(square_grads, dim=1)  # (n,)
+                print(f"v_t的gradfn为：{v_t.grad_fn}")
+
+                # 构造近似 Hessian 矩阵的对角块
+                # 使用 v_t 乘以单位矩阵，保持与模型参数的依赖关系
+                diag_blocks = v_t.view(n, 1, 1) * torch.eye(3, device=device).view(1, 3, 3)  # (n, 3, 3)
+                approx_hessian = diag_blocks.view(n, -1)  # (n, 9)
+                print(f"approx_hessian的gradfn为：{approx_hessian.grad_fn}")
+                # logger.info(approx_hessian)
+
+                # 构造完整的 Hessian 矩阵，其中对角块为 approx_hessian，非对角块为零
+                # 注意：为了保持梯度流动，非对角块不需要参与梯度计算，因此不设置 requires_grad=True
+                hessian_blocks = []
+                for i in range(n):
+                    for j in range(n):
+                        if i == j:
+                            # 对角块来自 approx_hessian
+                            hessian_blocks.append(approx_hessian[i])  # (9,)
+                        else:
+                            # 非对角块设为零
+                            zero_block = torch.zeros(9, device=device, dtype=approx_hessian.dtype)
+                            hessian_blocks.append(zero_block)
+                # 拼接成 (n^2, 9)
+                approx_hessian_full = torch.stack(hessian_blocks, dim=0)  # (n^2, 9)
+                print(f"approx_hessian_full的gradfn为：{approx_hessian_full.grad_fn}")
+                # logger.info(approx_hessian_full)
+
+                batch_hessians.append(approx_hessian_full)
+
+            # 合并所有样本的 Hessian
+            hessian_final = torch.cat(batch_hessians, dim=0)  # (sum n_i^2, 9)
+            print(f"hessian_final的gradfn为：{hessian_final.grad_fn}")
+
+            # 确保形状匹配
+            if hessian_final.shape != data.force_constants_all.shape:
+                raise ValueError(
+                    f"Dimension mismatch: hessian shape {hessian_final.shape}, "
+                    f"target shape {data.force_constants_all.shape}"
+                )
 
             # 计算损失
-            loss = criterion(approx_hessian, data.force_constants_all)
+            loss = criterion(hessian_final, data.force_constants_all.to(device))
+            trace_grad_fn(loss)
 
-        optimizer.zero_grad()
-
+        # 反向传播和优化
         if loss_scaler is not None:
             loss_scaler(loss, optimizer, parameters=model.parameters())
         else:
             loss.backward()
             if clip_grad is not None:
-                dispatch_clip_grad(model.parameters(), value=clip_grad, mode='norm')
+                torch.nn.utils.clip_grad_norm_(model.parameters(), clip_grad)
             optimizer.step()
+            print(f"loss的grad为{loss.grad}")
+
+        # 保存更新后的参数
+        after_params = [param.clone().detach() for param in model.parameters()]
+        updated_params = []
+        # 比较参数是否发生变化
+        for idx, (before, after) in enumerate(zip(before_params, after_params)):
+            if not torch.equal(before, after):
+                param_name = list(model.state_dict().keys())[idx]
+                updated_params.append((idx, param_name, before, after))
+
+                # 随机选择五个更新的参数进行打印
+                if updated_params:
+                    sample_params = random.sample(updated_params, min(len(updated_params), 5))
+                    for idx, param_name, before, after in sample_params:
+                        logger.info(f"参数已更新: 参数索引 {idx}")
+                        logger.info(f"更新的参数名称: {param_name}")
+                        logger.info(f"更新前的参数值: {before}")
+                        logger.info(f"更新后的参数值: {after}")
+                    # break
+                else:
+                    logger.info("参数未更新")
+
+                # 更新 before_params
+                before_params = after_params
 
         # 记录损失和MAE
-        loss_metric.update(loss.item(), n=1)
+        loss_metric.update(loss.item(), n=hessian_final.shape[0])
         mae_metric.update(
-            torch.mean(torch.abs(torch.cat(list(approx_hessian.values())) - data.force_constants_all)).item(), 
-            n=1
+            torch.mean(torch.abs(hessian_final - data.force_constants_all)).item(),
+            n=hessian_final.shape[0]
         )
 
         if step % print_freq == 0 and logger is not None:
             logger.info(
-                f"Train Epoch [{epoch}], Step [{step}/{len(data_loader)}], "
+                f"Epoch [{epoch}], Step [{step}/{len(data_loader)}], "
                 f"Loss: {loss_metric.avg:.4f}, MAE: {mae_metric.avg:.4f}"
             )
 
