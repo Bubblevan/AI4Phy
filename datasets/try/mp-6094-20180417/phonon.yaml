@@ -1,0 +1,216 @@
+name:      phonon
+type:      phonon
+id:        2
+status:    done
+directory: phonon
+tasks:
+- name:      equilibrium
+  type:      structopt
+  id:        3
+  status:    done
+  directory: equilibrium
+- name:      disp-001
+  type:      electronic_structure
+  id:        901
+  status:    done
+  directory: disp-001
+- name:      disp-002
+  type:      electronic_structure
+  id:        902
+  status:    done
+  directory: disp-002
+- name:      disp-003
+  type:      electronic_structure
+  id:        903
+  status:    done
+  directory: disp-003
+- name:      disp-004
+  type:      electronic_structure
+  id:        904
+  status:    done
+  directory: disp-004
+- name:      disp-005
+  type:      electronic_structure
+  id:        905
+  status:    done
+  directory: disp-005
+- name:      disp-006
+  type:      electronic_structure
+  id:        906
+  status:    done
+  directory: disp-006
+- name:      disp-007
+  type:      electronic_structure
+  id:        907
+  status:    done
+  directory: disp-007
+- name:      disp-008
+  type:      electronic_structure
+  id:        908
+  status:    done
+  directory: disp-008
+- name:      disp-009
+  type:      electronic_structure
+  id:        909
+  status:    done
+  directory: disp-009
+- name:      disp-010
+  type:      electronic_structure
+  id:        910
+  status:    done
+  directory: disp-010
+- name:      disp-011
+  type:      electronic_structure
+  id:        911
+  status:    done
+  directory: disp-011
+- name:      disp-012
+  type:      electronic_structure
+  id:        912
+  status:    done
+  directory: disp-012
+- name:      disp-013
+  type:      electronic_structure
+  id:        913
+  status:    done
+  directory: disp-013
+- name:      disp-014
+  type:      electronic_structure
+  id:        914
+  status:    done
+  directory: disp-014
+- name:      disp-015
+  type:      electronic_structure
+  id:        915
+  status:    done
+  directory: disp-015
+- name:      disp-016
+  type:      electronic_structure
+  id:        916
+  status:    done
+  directory: disp-016
+- name:      disp-017
+  type:      electronic_structure
+  id:        917
+  status:    done
+  directory: disp-017
+- name:      disp-018
+  type:      electronic_structure
+  id:        918
+  status:    done
+  directory: disp-018
+- name:      disp-019
+  type:      electronic_structure
+  id:        919
+  status:    done
+  directory: disp-019
+- name:      disp-020
+  type:      electronic_structure
+  id:        920
+  status:    done
+  directory: disp-020
+- name:      disp-021
+  type:      electronic_structure
+  id:        921
+  status:    done
+  directory: disp-021
+- name:      disp-022
+  type:      electronic_structure
+  id:        922
+  status:    done
+  directory: disp-022
+- name:      disp-023
+  type:      electronic_structure
+  id:        923
+  status:    done
+  directory: disp-023
+lattice_tolerance: 0.100000
+stress_tolerance: 10.000000
+pressure_target: 0.000000
+force_tolerance: 0.001000
+max_increase: unset
+max_iteration: 20
+min_iteration: 1
+supercell_matrix:
+- [   1,   0,   0 ]
+- [   0,   1,   0 ]
+- [   0,   0,   2 ]
+distance: 0.010000
+lattice:
+- [     7.8190960399999998,     0.0000000000000000,     0.0000000000000000 ] # a
+- [     0.0000000000000000,     7.8190960399999998,     0.0000000000000000 ] # b
+- [     0.0000000000000000,     0.0000000000000000,     4.9779156999999996 ] # c
+points:
+- symbol: O  # 1
+  coordinates: [  0.4178369300000000,  0.6836399000000000,  0.7770455300000000 ]
+  mass: 15.999400
+- symbol: O  # 2
+  coordinates: [  0.5821630700000000,  0.3163601000000000,  0.7770455300000000 ]
+  mass: 15.999400
+- symbol: O  # 3
+  coordinates: [  0.3163601000000000,  0.4178369300000000,  0.2229544700000000 ]
+  mass: 15.999400
+- symbol: O  # 4
+  coordinates: [  0.6836399000000000,  0.5821630700000000,  0.2229544700000000 ]
+  mass: 15.999400
+- symbol: O  # 5
+  coordinates: [  0.1836399000000000,  0.9178369300000000,  0.7770455300000000 ]
+  mass: 15.999400
+- symbol: O  # 6
+  coordinates: [  0.9178369300000000,  0.8163601000000000,  0.2229544700000000 ]
+  mass: 15.999400
+- symbol: O  # 7
+  coordinates: [  0.0821630700000000,  0.1836399000000000,  0.2229544700000000 ]
+  mass: 15.999400
+- symbol: O  # 8
+  coordinates: [  0.8163601000000000,  0.0821630700000000,  0.7770455300000000 ]
+  mass: 15.999400
+- symbol: O  # 9
+  coordinates: [  0.3577289000000000,  0.8577289000000000,  0.2537132800000000 ]
+  mass: 15.999400
+- symbol: O  # 10
+  coordinates: [  0.8577289000000000,  0.6422711000000000,  0.7462867200000000 ]
+  mass: 15.999400
+- symbol: O  # 11
+  coordinates: [  0.5000000000000000,  0.0000000000000000,  0.8105593400000000 ]
+  mass: 15.999400
+- symbol: O  # 12
+  coordinates: [  0.0000000000000000,  0.5000000000000000,  0.1894406600000000 ]
+  mass: 15.999400
+- symbol: O  # 13
+  coordinates: [  0.6422711000000000,  0.1422711000000000,  0.2537132800000000 ]
+  mass: 15.999400
+- symbol: O  # 14
+  coordinates: [  0.1422711000000000,  0.3577289000000000,  0.7462867200000000 ]
+  mass: 15.999400
+- symbol: Mg # 15
+  coordinates: [  0.0000000000000000,  0.0000000000000000,  0.0000000000000000 ]
+  mass: 24.305000
+- symbol: Mg # 16
+  coordinates: [  0.5000000000000000,  0.5000000000000000,  0.0000000000000000 ]
+  mass: 24.305000
+- symbol: Si # 17
+  coordinates: [  0.8586404500000000,  0.6413595500000000,  0.0700181200000000 ]
+  mass: 28.085500
+- symbol: Si # 18
+  coordinates: [  0.6413595500000000,  0.1413595500000000,  0.9299818800000000 ]
+  mass: 28.085500
+- symbol: Si # 19
+  coordinates: [  0.1413595500000000,  0.3586404500000000,  0.0700181200000000 ]
+  mass: 28.085500
+- symbol: Si # 20
+  coordinates: [  0.3586404500000000,  0.8586404500000000,  0.9299818800000000 ]
+  mass: 28.085500
+- symbol: Ca # 21
+  coordinates: [  0.3312974800000000,  0.1687025200000000,  0.4965735500000000 ]
+  mass: 40.078000
+- symbol: Ca # 22
+  coordinates: [  0.8312974800000000,  0.3312974800000000,  0.5034264500000000 ]
+  mass: 40.078000
+- symbol: Ca # 23
+  coordinates: [  0.1687025200000000,  0.6687025200000000,  0.5034264500000000 ]
+  mass: 40.078000
+- symbol: Ca # 24
+  coordinates: [  0.6687025200000000,  0.8312974800000000,  0.4965735500000000 ]
+  mass: 40.078000
+electric_total_energy:      -180.3027562900

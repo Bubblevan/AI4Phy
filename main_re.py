@@ -34,7 +34,7 @@ import utils
 import warnings
 
 import torch.profiler
-from torch.profiler import profile, ProfilerActivity, tensorboard_trace_handler
+from torch.profiler import profile, record_function, ProfilerActivity
 
 warnings.filterwarnings('ignore')
 ModelEma = ModelEmaV2
@@ -214,7 +214,7 @@ def main(args):
 
     ''' Dataset '''
     # data_source = get_Path(args.data_path+'/mp/')
-    data_source = get_Path(args.data_path+'/test/')
+    data_source = get_Path(args.data_path+'/try/')
 
 
     fold_num = 10
@@ -258,7 +258,11 @@ def main(args):
     # since dataset needs random 
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
+    ##############################################################
+    # device = 'cpu' # 看完记得改回去
     device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
+    ##############################################################
+
     # Print data attributes and dimensions
     # for step, data in enumerate(train_loader):
     #     print(f"Batch {step + 1}:")
@@ -325,7 +329,7 @@ def main(args):
         epoch_error = []
         lr_scheduler.step(epoch)
 
-        train_err, train_loss = train_one_epoch_adam(
+        train_err, train_loss = train_one_epoch_hessian(
             model=model, criterion=criterion, 
             data_loader=train_loader, optimizer=optimizer,
             device=device, epoch=epoch, model_ema=model_ema, 

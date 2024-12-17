@@ -12,6 +12,8 @@ class FileLogger:
         else:
             self.logger_name = None
             self.logger = NoOp()
+    def error(self, msg: str):
+        self.logger.error(msg)
         
         
     def get_logger(self, output_dir, log_to_file):

@@ -1,0 +1,201 @@
+name:      phonon
+type:      phonon
+id:        250
+status:    done
+directory: phonon
+tasks:
+- name:      equilibrium
+  type:      structopt
+  id:        251
+  status:    done
+  directory: equilibrium
+- name:      disp-001
+  type:      electronic_structure
+  id:        3457
+  status:    done
+  directory: disp-001
+- name:      disp-002
+  type:      electronic_structure
+  id:        3458
+  status:    done
+  directory: disp-002
+- name:      disp-003
+  type:      electronic_structure
+  id:        3459
+  status:    done
+  directory: disp-003
+- name:      disp-004
+  type:      electronic_structure
+  id:        3460
+  status:    done
+  directory: disp-004
+- name:      disp-005
+  type:      electronic_structure
+  id:        3461
+  status:    done
+  directory: disp-005
+- name:      disp-006
+  type:      electronic_structure
+  id:        3462
+  status:    done
+  directory: disp-006
+- name:      disp-007
+  type:      electronic_structure
+  id:        3463
+  status:    done
+  directory: disp-007
+- name:      disp-008
+  type:      electronic_structure
+  id:        3464
+  status:    done
+  directory: disp-008
+- name:      disp-009
+  type:      electronic_structure
+  id:        3465
+  status:    done
+  directory: disp-009
+- name:      disp-010
+  type:      electronic_structure
+  id:        3466
+  status:    done
+  directory: disp-010
+- name:      disp-011
+  type:      electronic_structure
+  id:        3467
+  status:    done
+  directory: disp-011
+- name:      disp-012
+  type:      electronic_structure
+  id:        3468
+  status:    done
+  directory: disp-012
+- name:      disp-013
+  type:      electronic_structure
+  id:        3469
+  status:    done
+  directory: disp-013
+- name:      disp-014
+  type:      electronic_structure
+  id:        3470
+  status:    done
+  directory: disp-014
+- name:      disp-015
+  type:      electronic_structure
+  id:        3471
+  status:    done
+  directory: disp-015
+- name:      disp-016
+  type:      electronic_structure
+  id:        3472
+  status:    done
+  directory: disp-016
+- name:      disp-017
+  type:      electronic_structure
+  id:        3473
+  status:    done
+  directory: disp-017
+- name:      disp-018
+  type:      electronic_structure
+  id:        3474
+  status:    done
+  directory: disp-018
+- name:      disp-019
+  type:      electronic_structure
+  id:        3475
+  status:    done
+  directory: disp-019
+- name:      disp-020
+  type:      electronic_structure
+  id:        3476
+  status:    done
+  directory: disp-020
+lattice_tolerance: 0.100000
+stress_tolerance: 10.000000
+pressure_target: 0.000000
+force_tolerance: 0.001000
+max_increase: unset
+max_iteration: 10
+min_iteration: 1
+supercell_matrix:
+- [   2,   0,   0 ]
+- [   0,   1,   0 ]
+- [   0,   0,   2 ]
+distance: 0.010000
+lattice:
+- [     7.8440752099999997,     0.0000000000000000,    -0.0722949500000000 ] # a
+- [     0.0000000000000000,     8.8147611000000001,     0.0000000000000000 ] # b
+- [    -1.0932468000000000,     0.0000000000000000,     7.4888524399999996 ] # c
+points:
+- symbol: P  # 1
+  coordinates: [  0.8811166900000000,  0.9428841600000000,  0.0225527700000000 ]
+  mass: 30.973762
+- symbol: P  # 2
+  coordinates: [  0.1188833100000000,  0.9428841600000000,  0.4774472300000000 ]
+  mass: 30.973762
+- symbol: P  # 3
+  coordinates: [  0.1188833100000000,  0.0571158400000000,  0.9774472300000000 ]
+  mass: 30.973762
+- symbol: P  # 4
+  coordinates: [  0.5000000000000000,  0.6958588900000000,  0.7500000000000000 ]
+  mass: 30.973762
+- symbol: P  # 5
+  coordinates: [  0.5000000000000000,  0.3041411100000000,  0.2500000000000000 ]
+  mass: 30.973762
+- symbol: P  # 6
+  coordinates: [  0.8811166900000000,  0.0571158400000000,  0.5225527700000000 ]
+  mass: 30.973762
+- symbol: P  # 7
+  coordinates: [  0.3811166900000000,  0.4428841600000000,  0.0225527700000000 ]
+  mass: 30.973762
+- symbol: P  # 8
+  coordinates: [  0.6188833100000000,  0.4428841600000000,  0.4774472300000000 ]
+  mass: 30.973762
+- symbol: P  # 9
+  coordinates: [  0.6188833100000000,  0.5571158400000000,  0.9774472300000000 ]
+  mass: 30.973762
+- symbol: P  # 10
+  coordinates: [  0.0000000000000000,  0.1958588900000000,  0.7500000000000000 ]
+  mass: 30.973762
+- symbol: P  # 11
+  coordinates: [  0.0000000000000000,  0.8041411100000000,  0.2500000000000000 ]
+  mass: 30.973762
+- symbol: P  # 12
+  coordinates: [  0.3811166900000000,  0.5571158400000000,  0.5225527700000000 ]
+  mass: 30.973762
+- symbol: Cl # 13
+  coordinates: [  0.5000000000000000,  0.1292097300000000,  0.7500000000000000 ]
+  mass: 35.453000
+- symbol: Cl # 14
+  coordinates: [  0.5000000000000000,  0.8707902700000000,  0.2500000000000000 ]
+  mass: 35.453000
+- symbol: Cl # 15
+  coordinates: [  0.0000000000000000,  0.6292097300000000,  0.7500000000000000 ]
+  mass: 35.453000
+- symbol: Cl # 16
+  coordinates: [  0.0000000000000000,  0.3707902700000000,  0.2500000000000000 ]
+  mass: 35.453000
+- symbol: Hg # 17
+  coordinates: [  0.7275200700000000,  0.8635701800000000,  0.6700973200000000 ]
+  mass: 200.590000
+- symbol: Hg # 18
+  coordinates: [  0.2724799300000000,  0.8635701800000000,  0.8299026800000000 ]
+  mass: 200.590000
+- symbol: Hg # 19
+  coordinates: [  0.7275200700000000,  0.1364298200000000,  0.1700973200000000 ]
+  mass: 200.590000
+- symbol: Hg # 20
+  coordinates: [  0.2724799300000000,  0.1364298200000000,  0.3299026800000000 ]
+  mass: 200.590000
+- symbol: Hg # 21
+  coordinates: [  0.2275200700000000,  0.3635701800000000,  0.6700973200000000 ]
+  mass: 200.590000
+- symbol: Hg # 22
+  coordinates: [  0.7724799300000000,  0.3635701800000000,  0.8299026800000000 ]
+  mass: 200.590000
+- symbol: Hg # 23
+  coordinates: [  0.2275200700000000,  0.6364298200000000,  0.1700973200000000 ]
+  mass: 200.590000
+- symbol: Hg # 24
+  coordinates: [  0.7724799300000000,  0.6364298200000000,  0.3299026800000000 ]
+  mass: 200.590000
+electric_total_energy:       -86.7865133600

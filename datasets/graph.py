@@ -73,13 +73,27 @@ class CrystalGraphDataset:
         self.force_constants, self.atom_pairs = self.read_force_constants()
         self.graph_data = self.points_to_graph()
 
+    # def read_phonopy_file(self):
+    #     with open(self.phonopy_file_path, 'r') as file:
+    #         yaml_content = yaml.safe_load(file)
+    #     supercell_points = yaml_content['supercell']['points']
+    #     supercell_lattice = yaml_content['supercell']['lattice']
+    #     parsed_points = [Point(p['symbol'], p['coordinates'], p['mass']) for p in supercell_points]
+    #     return parsed_points, supercell_lattice
+
     def read_phonopy_file(self):
         with open(self.phonopy_file_path, 'r') as file:
             yaml_content = yaml.safe_load(file)
-        supercell_points = yaml_content['supercell']['points']
-        supercell_lattice = yaml_content['supercell']['lattice']
-        parsed_points = [Point(p['symbol'], p['coordinates'], p['mass']) for p in supercell_points]
-        return parsed_points, supercell_lattice
+
+        # 获取 unit_cell 信息
+        unit_cell_points = yaml_content['unit_cell']['points']
+        unit_cell_lattice = yaml_content['unit_cell']['lattice']
+
+        # 解析点信息
+        parsed_points = [Point(p['symbol'], p['coordinates'], p['mass']) for p in unit_cell_points]
+
+        return parsed_points, unit_cell_lattice
+
     
     def read_force_constants(self):
         with open(self.force_constants_file_path, 'r') as file:

@@ -17,8 +17,8 @@ python -u ../main_re.py \
     --input-irreps '86x0e' \
     --data-path '../datasets' \
     --run-fold 4 \
-    --batch-size 4 \
-    --epochs 20 \
+    --batch-size 1 \
+    --epochs 10 \
     --radius 8.0 \
     --num-basis 86 \
     --drop-path 0.0 \

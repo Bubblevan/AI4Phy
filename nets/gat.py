@@ -1447,11 +1447,13 @@ class GraphAttentionTransformer_dx_v3(torch.nn.Module):
         num_atoms_per_sample = torch.bincount(batch).tolist()
         start_index = 0
 
-        for num_atoms in num_atoms_per_sample:
-            end_index = start_index + num_atoms
+        # 获取当前样本的原子数
+        num_atoms = dist_matrix.size(0)
+        # 如果原子数目小于 max_neighbors + 1，则减少 k 的值
+        k_value = min(max_neighbors + 1, num_atoms)
 
         # 计算每个原子最近的 max_neighbors 个原子
-        _, nearest_indices = dist_matrix.topk(k=max_neighbors + 1, largest=False, sorted=False)
+        _, nearest_indices = dist_matrix.topk(k=k_value, largest=False, sorted=False)
         nearest_distances = dist_matrix.gather(1, nearest_indices[:, 1:])  # 去掉对角线
 
         # 计算每个原子最大邻居距离，并与阈值取最小值

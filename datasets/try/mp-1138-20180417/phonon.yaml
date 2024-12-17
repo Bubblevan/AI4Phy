@@ -1,0 +1,63 @@
+name:      phonon
+type:      phonon
+id:        2954
+status:    done
+directory: phonon
+tasks:
+- name:      equilibrium
+  type:      structopt
+  id:        2955
+  status:    done
+  directory: equilibrium
+- name:      disp-001
+  type:      electronic_structure
+  id:        9556
+  status:    done
+  directory: disp-001
+- name:      disp-002
+  type:      electronic_structure
+  id:        9557
+  status:    done
+  directory: disp-002
+lattice_tolerance: 0.100000
+stress_tolerance: 10.000000
+pressure_target: 0.000000
+force_tolerance: 0.001000
+max_increase: unset
+max_iteration: 20
+min_iteration: 1
+supercell_matrix:
+- [   2,   0,   0 ]
+- [   0,   2,   0 ]
+- [   0,   0,   2 ]
+distance: 0.010000
+lattice:
+- [     3.9953003300000001,     0.0000000000000000,     0.0000000000000000 ] # a
+- [     0.0000000000000000,     3.9953003300000001,     0.0000000000000000 ] # b
+- [     0.0000000000000000,     0.0000000000000000,     3.9953003300000001 ] # c
+points:
+- symbol: Li # 1
+  coordinates: [  0.0000000000000000,  0.0000000000000000,  0.0000000000000000 ]
+  mass: 6.941000
+- symbol: Li # 2
+  coordinates: [  0.0000000000000000,  0.5000000000000000,  0.5000000000000000 ]
+  mass: 6.941000
+- symbol: Li # 3
+  coordinates: [  0.5000000000000000,  0.0000000000000000,  0.5000000000000000 ]
+  mass: 6.941000
+- symbol: Li # 4
+  coordinates: [  0.5000000000000000,  0.5000000000000000,  0.0000000000000000 ]
+  mass: 6.941000
+- symbol: F  # 5
+  coordinates: [  0.5000000000000000,  0.0000000000000000,  0.0000000000000000 ]
+  mass: 18.998403
+- symbol: F  # 6
+  coordinates: [  0.5000000000000000,  0.5000000000000000,  0.5000000000000000 ]
+  mass: 18.998403
+- symbol: F  # 7
+  coordinates: [  0.0000000000000000,  0.0000000000000000,  0.5000000000000000 ]
+  mass: 18.998403
+- symbol: F  # 8
+  coordinates: [  0.0000000000000000,  0.5000000000000000,  0.0000000000000000 ]
+  mass: 18.998403
+electric_total_energy:       -39.4270590500

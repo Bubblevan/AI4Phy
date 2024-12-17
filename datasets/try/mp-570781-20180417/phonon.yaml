@@ -1,0 +1,353 @@
+name:      phonon
+type:      phonon
+id:        1918
+status:    done
+directory: phonon
+tasks:
+- name:      equilibrium
+  type:      structopt
+  id:        1919
+  status:    done
+  directory: equilibrium
+- name:      disp-001
+  type:      electronic_structure
+  id:        9047
+  status:    done
+  directory: disp-001
+- name:      disp-002
+  type:      electronic_structure
+  id:        9048
+  status:    done
+  directory: disp-002
+- name:      disp-003
+  type:      electronic_structure
+  id:        9049
+  status:    done
+  directory: disp-003
+- name:      disp-004
+  type:      electronic_structure
+  id:        9050
+  status:    done
+  directory: disp-004
+- name:      disp-005
+  type:      electronic_structure
+  id:        9051
+  status:    done
+  directory: disp-005
+- name:      disp-006
+  type:      electronic_structure
+  id:        9052
+  status:    done
+  directory: disp-006
+- name:      disp-007
+  type:      electronic_structure
+  id:        9053
+  status:    done
+  directory: disp-007
+- name:      disp-008
+  type:      electronic_structure
+  id:        9054
+  status:    done
+  directory: disp-008
+- name:      disp-009
+  type:      electronic_structure
+  id:        9055
+  status:    done
+  directory: disp-009
+- name:      disp-010
+  type:      electronic_structure
+  id:        9056
+  status:    done
+  directory: disp-010
+- name:      disp-011
+  type:      electronic_structure
+  id:        9057
+  status:    done
+  directory: disp-011
+- name:      disp-012
+  type:      electronic_structure
+  id:        9058
+  status:    done
+  directory: disp-012
+- name:      disp-013
+  type:      electronic_structure
+  id:        9059
+  status:    done
+  directory: disp-013
+- name:      disp-014
+  type:      electronic_structure
+  id:        9060
+  status:    done
+  directory: disp-014
+- name:      disp-015
+  type:      electronic_structure
+  id:        9061
+  status:    done
+  directory: disp-015
+- name:      disp-016
+  type:      electronic_structure
+  id:        9062
+  status:    done
+  directory: disp-016
+- name:      disp-017
+  type:      electronic_structure
+  id:        9063
+  status:    done
+  directory: disp-017
+- name:      disp-018
+  type:      electronic_structure
+  id:        9064
+  status:    done
+  directory: disp-018
+- name:      disp-019
+  type:      electronic_structure
+  id:        9065
+  status:    done
+  directory: disp-019
+- name:      disp-020
+  type:      electronic_structure
+  id:        9066
+  status:    done
+  directory: disp-020
+- name:      disp-021
+  type:      electronic_structure
+  id:        9067
+  status:    done
+  directory: disp-021
+- name:      disp-022
+  type:      electronic_structure
+  id:        9068
+  status:    done
+  directory: disp-022
+- name:      disp-023
+  type:      electronic_structure
+  id:        9069
+  status:    done
+  directory: disp-023
+- name:      disp-024
+  type:      electronic_structure
+  id:        9070
+  status:    done
+  directory: disp-024
+- name:      disp-025
+  type:      electronic_structure
+  id:        9071
+  status:    done
+  directory: disp-025
+- name:      disp-026
+  type:      electronic_structure
+  id:        9072
+  status:    done
+  directory: disp-026
+- name:      disp-027
+  type:      electronic_structure
+  id:        9073
+  status:    done
+  directory: disp-027
+- name:      disp-028
+  type:      electronic_structure
+  id:        9074
+  status:    done
+  directory: disp-028
+- name:      disp-029
+  type:      electronic_structure
+  id:        9075
+  status:    done
+  directory: disp-029
+- name:      disp-030
+  type:      electronic_structure
+  id:        9076
+  status:    done
+  directory: disp-030
+- name:      disp-031
+  type:      electronic_structure
+  id:        9077
+  status:    done
+  directory: disp-031
+- name:      disp-032
+  type:      electronic_structure
+  id:        9078
+  status:    done
+  directory: disp-032
+- name:      disp-033
+  type:      electronic_structure
+  id:        9079
+  status:    done
+  directory: disp-033
+- name:      disp-034
+  type:      electronic_structure
+  id:        9080
+  status:    done
+  directory: disp-034
+- name:      disp-035
+  type:      electronic_structure
+  id:        9081
+  status:    done
+  directory: disp-035
+- name:      disp-036
+  type:      electronic_structure
+  id:        9082
+  status:    done
+  directory: disp-036
+- name:      disp-037
+  type:      electronic_structure
+  id:        9083
+  status:    done
+  directory: disp-037
+- name:      disp-038
+  type:      electronic_structure
+  id:        9084
+  status:    done
+  directory: disp-038
+- name:      disp-039
+  type:      electronic_structure
+  id:        9085
+  status:    done
+  directory: disp-039
+- name:      disp-040
+  type:      electronic_structure
+  id:        9086
+  status:    done
+  directory: disp-040
+- name:      disp-041
+  type:      electronic_structure
+  id:        9087
+  status:    done
+  directory: disp-041
+- name:      disp-042
+  type:      electronic_structure
+  id:        9088
+  status:    done
+  directory: disp-042
+- name:      disp-043
+  type:      electronic_structure
+  id:        9089
+  status:    done
+  directory: disp-043
+- name:      disp-044
+  type:      electronic_structure
+  id:        9090
+  status:    done
+  directory: disp-044
+- name:      disp-045
+  type:      electronic_structure
+  id:        9091
+  status:    done
+  directory: disp-045
+- name:      disp-046
+  type:      electronic_structure
+  id:        9092
+  status:    done
+  directory: disp-046
+- name:      disp-047
+  type:      electronic_structure
+  id:        9093
+  status:    done
+  directory: disp-047
+- name:      disp-048
+  type:      electronic_structure
+  id:        9094
+  status:    done
+  directory: disp-048
+- name:      disp-049
+  type:      electronic_structure
+  id:        9095
+  status:    done
+  directory: disp-049
+- name:      disp-050
+  type:      electronic_structure
+  id:        9096
+  status:    done
+  directory: disp-050
+- name:      disp-051
+  type:      electronic_structure
+  id:        9097
+  status:    done
+  directory: disp-051
+- name:      disp-052
+  type:      electronic_structure
+  id:        9098
+  status:    done
+  directory: disp-052
+- name:      disp-053
+  type:      electronic_structure
+  id:        9099
+  status:    done
+  directory: disp-053
+- name:      disp-054
+  type:      electronic_structure
+  id:        9100
+  status:    done
+  directory: disp-054
+lattice_tolerance: 0.100000
+stress_tolerance: 10.000000
+pressure_target: 0.000000
+force_tolerance: 0.001000
+max_increase: unset
+max_iteration: 20
+min_iteration: 1
+supercell_matrix:
+- [   2,   0,   0 ]
+- [   0,   2,   0 ]
+- [   0,   0,   1 ]
+distance: 0.010000
+lattice:
+- [     4.2219764499999997,     0.0000000000000000,     0.0000000000000000 ] # a
+- [    -2.1109882299999998,     3.6563388600000000,     0.0000000000000000 ] # b
+- [     0.0000000000000000,     0.0000000000000000,    41.1036602100000010 ] # c
+points:
+- symbol: Cd # 1
+  coordinates: [  0.3333333300000000,  0.6666666700000000,  0.5416053600000000 ]
+  mass: 112.411000
+- symbol: Cd # 2
+  coordinates: [  0.3333333300000000,  0.6666666700000000,  0.3749608500000000 ]
+  mass: 112.411000
+- symbol: Cd # 3
+  coordinates: [  0.0000000000000000,  0.0000000000000000,  0.7083516600000000 ]
+  mass: 112.411000
+- symbol: Cd # 4
+  coordinates: [  0.6666666700000000,  0.3333333300000000,  0.0417022400000000 ]
+  mass: 112.411000
+- symbol: Cd # 5
+  coordinates: [  0.0000000000000000,  0.0000000000000000,  0.2083553100000000 ]
+  mass: 112.411000
+- symbol: Cd # 6
+  coordinates: [  0.0000000000000000,  0.0000000000000000,  0.8750254000000000 ]
+  mass: 112.411000
+- symbol: I  # 7
+  coordinates: [  0.3333333300000000,  0.6666666700000000,  0.0831857100000000 ]
+  mass: 126.904470
+- symbol: I  # 8
+  coordinates: [  0.0000000000000000,  0.0000000000000000,  0.5830873700000000 ]
+  mass: 126.904470
+- symbol: I  # 9
+  coordinates: [  0.6666666700000000,  0.3333333300000000,  0.8335529500000000 ]
+  mass: 126.904470
+- symbol: I  # 10
+  coordinates: [  0.3333333300000000,  0.6666666700000000,  0.9165062400000000 ]
+  mass: 126.904470
+- symbol: I  # 11
+  coordinates: [  0.6666666700000000,  0.3333333300000000,  0.3334803500000000 ]
+  mass: 126.904470
+- symbol: I  # 12
+  coordinates: [  0.3333333300000000,  0.6666666700000000,  0.7498229400000000 ]
+  mass: 126.904470
+- symbol: I  # 13
+  coordinates: [  0.0000000000000000,  0.0000000000000000,  0.4164292500000000 ]
+  mass: 126.904470
+- symbol: I  # 14
+  coordinates: [  0.0000000000000000,  0.0000000000000000,  0.0002271600000000 ]
+  mass: 126.904470
+- symbol: I  # 15
+  coordinates: [  0.6666666700000000,  0.3333333300000000,  0.6668692899999999 ]
+  mass: 126.904470
+- symbol: I  # 16
+  coordinates: [  0.6666666700000000,  0.3333333300000000,  0.5001296400000000 ]
+  mass: 126.904470
+- symbol: I  # 17
+  coordinates: [  0.3333333300000000,  0.6666666700000000,  0.2498342100000000 ]
+  mass: 126.904470
+- symbol: I  # 18
+  coordinates: [  0.6666666700000000,  0.3333333300000000,  0.1668740700000000 ]
+  mass: 126.904470
+electric_total_energy:       -38.1965471200

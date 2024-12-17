@@ -1,0 +1,271 @@
+name:      phonon
+type:      phonon
+id:        1566
+status:    done
+directory: phonon
+traverse:  restart
+tasks:
+- name:      equilibrium
+  type:      structopt
+  id:        1567
+  status:    done
+  directory: equilibrium
+  traverse:  restart
+- name:      disp-001
+  type:      electronic_structure
+  id:        7805
+  status:    done
+  directory: disp-001
+  traverse:  restart
+- name:      disp-002
+  type:      electronic_structure
+  id:        7806
+  status:    done
+  directory: disp-002
+  traverse:  restart
+- name:      disp-003
+  type:      electronic_structure
+  id:        7807
+  status:    done
+  directory: disp-003
+  traverse:  restart
+- name:      disp-004
+  type:      electronic_structure
+  id:        7808
+  status:    done
+  directory: disp-004
+  traverse:  restart
+- name:      disp-005
+  type:      electronic_structure
+  id:        7809
+  status:    done
+  directory: disp-005
+  traverse:  restart
+- name:      disp-006
+  type:      electronic_structure
+  id:        7810
+  status:    done
+  directory: disp-006
+  traverse:  restart
+- name:      disp-007
+  type:      electronic_structure
+  id:        7811
+  status:    done
+  directory: disp-007
+  traverse:  restart
+- name:      disp-008
+  type:      electronic_structure
+  id:        7812
+  status:    done
+  directory: disp-008
+  traverse:  restart
+- name:      disp-009
+  type:      electronic_structure
+  id:        7813
+  status:    done
+  directory: disp-009
+  traverse:  restart
+- name:      disp-010
+  type:      electronic_structure
+  id:        7814
+  status:    done
+  directory: disp-010
+  traverse:  restart
+- name:      disp-011
+  type:      electronic_structure
+  id:        7815
+  status:    done
+  directory: disp-011
+  traverse:  restart
+- name:      disp-012
+  type:      electronic_structure
+  id:        7816
+  status:    done
+  directory: disp-012
+  traverse:  restart
+- name:      disp-013
+  type:      electronic_structure
+  id:        7817
+  status:    done
+  directory: disp-013
+  traverse:  restart
+- name:      disp-014
+  type:      electronic_structure
+  id:        7818
+  status:    done
+  directory: disp-014
+  traverse:  restart
+- name:      disp-015
+  type:      electronic_structure
+  id:        7819
+  status:    done
+  directory: disp-015
+  traverse:  restart
+- name:      disp-016
+  type:      electronic_structure
+  id:        7820
+  status:    done
+  directory: disp-016
+  traverse:  restart
+- name:      disp-017
+  type:      electronic_structure
+  id:        7821
+  status:    done
+  directory: disp-017
+  traverse:  restart
+- name:      disp-018
+  type:      electronic_structure
+  id:        7822
+  status:    done
+  directory: disp-018
+  traverse:  restart
+- name:      disp-019
+  type:      electronic_structure
+  id:        7823
+  status:    done
+  directory: disp-019
+  traverse:  restart
+- name:      disp-020
+  type:      electronic_structure
+  id:        7824
+  status:    done
+  directory: disp-020
+  traverse:  restart
+- name:      disp-021
+  type:      electronic_structure
+  id:        7825
+  status:    done
+  directory: disp-021
+  traverse:  restart
+- name:      disp-022
+  type:      electronic_structure
+  id:        7826
+  status:    done
+  directory: disp-022
+  traverse:  restart
+- name:      disp-023
+  type:      electronic_structure
+  id:        7827
+  status:    done
+  directory: disp-023
+  traverse:  restart
+- name:      disp-024
+  type:      electronic_structure
+  id:        7828
+  status:    done
+  directory: disp-024
+  traverse:  restart
+- name:      disp-025
+  type:      electronic_structure
+  id:        7829
+  status:    done
+  directory: disp-025
+  traverse:  restart
+- name:      disp-026
+  type:      electronic_structure
+  id:        7830
+  status:    done
+  directory: disp-026
+  traverse:  restart
+- name:      disp-027
+  type:      electronic_structure
+  id:        7831
+  status:    done
+  directory: disp-027
+  traverse:  restart
+lattice_tolerance: 0.100000
+stress_tolerance: 10.000000
+pressure_target: 0.000000
+force_tolerance: 0.001000
+max_increase: unset
+max_iteration: 20
+min_iteration: 1
+supercell_matrix:
+- [   2,   0,   0 ]
+- [   0,   1,   0 ]
+- [   0,   0,   2 ]
+distance: 0.010000
+lattice:
+- [     6.8355063200000004,     0.0000000000000000,     0.0056750200000000 ] # a
+- [     0.0000000000000000,    11.7837054999999999,     0.0000000000000000 ] # b
+- [    -2.3064499100000000,     0.0000000000000000,     7.0243006899999996 ] # c
+points:
+- symbol: Ca # 1
+  coordinates: [  0.5000000000000000,  0.0000000000000000,  0.5000000000000000 ]
+  mass: 40.078000
+- symbol: Ca # 2
+  coordinates: [  0.5000000000000000,  0.6756536200000000,  0.5000000000000000 ]
+  mass: 40.078000
+- symbol: Ca # 3
+  coordinates: [  0.5000000000000000,  0.3243463800000000,  0.5000000000000000 ]
+  mass: 40.078000
+- symbol: Ca # 4
+  coordinates: [  0.5000000000000000,  0.1652076500000000,  0.0000000000000000 ]
+  mass: 40.078000
+- symbol: Ca # 5
+  coordinates: [  0.5000000000000000,  0.8347923500000000,  0.0000000000000000 ]
+  mass: 40.078000
+- symbol: Ca # 6
+  coordinates: [  0.0000000000000000,  0.5000000000000000,  0.5000000000000000 ]
+  mass: 40.078000
+- symbol: Ca # 7
+  coordinates: [  0.0000000000000000,  0.1756536200000000,  0.5000000000000000 ]
+  mass: 40.078000
+- symbol: Ca # 8
+  coordinates: [  0.0000000000000000,  0.8243463800000000,  0.5000000000000000 ]
+  mass: 40.078000
+- symbol: Ca # 9
+  coordinates: [  0.0000000000000000,  0.6652076500000000,  0.0000000000000000 ]
+  mass: 40.078000
+- symbol: Ca # 10
+  coordinates: [  0.0000000000000000,  0.3347923500000000,  0.0000000000000000 ]
+  mass: 40.078000
+- symbol: P  # 11
+  coordinates: [  0.2247938000000000,  0.0000000000000000,  0.7560317800000000 ]
+  mass: 30.973762
+- symbol: P  # 12
+  coordinates: [  0.7752062000000000,  0.0000000000000000,  0.2439682200000000 ]
+  mass: 30.973762
+- symbol: P  # 13
+  coordinates: [  0.7670425900000000,  0.1540543000000000,  0.7601114900000000 ]
+  mass: 30.973762
+- symbol: P  # 14
+  coordinates: [  0.2329574100000000,  0.1540543000000000,  0.2398885100000000 ]
+  mass: 30.973762
+- symbol: P  # 15
+  coordinates: [  0.2329574100000000,  0.8459457000000000,  0.2398885100000000 ]
+  mass: 30.973762
+- symbol: P  # 16
+  coordinates: [  0.7670425900000000,  0.8459457000000000,  0.7601114900000000 ]
+  mass: 30.973762
+- symbol: P  # 17
+  coordinates: [  0.9473024300000000,  0.0000000000000000,  0.8353561700000000 ]
+  mass: 30.973762
+- symbol: P  # 18
+  coordinates: [  0.0526975700000000,  0.0000000000000000,  0.1646438300000000 ]
+  mass: 30.973762
+- symbol: P  # 19
+  coordinates: [  0.7247938000000000,  0.5000000000000000,  0.7560317800000000 ]
+  mass: 30.973762
+- symbol: P  # 20
+  coordinates: [  0.2752062000000000,  0.5000000000000000,  0.2439682200000000 ]
+  mass: 30.973762
+- symbol: P  # 21
+  coordinates: [  0.2670425900000000,  0.6540543000000000,  0.7601114900000000 ]
+  mass: 30.973762
+- symbol: P  # 22
+  coordinates: [  0.7329574100000000,  0.6540543000000000,  0.2398885100000000 ]
+  mass: 30.973762
+- symbol: P  # 23
+  coordinates: [  0.7329574100000000,  0.3459457000000000,  0.2398885100000000 ]
+  mass: 30.973762
+- symbol: P  # 24
+  coordinates: [  0.2670425900000000,  0.3459457000000000,  0.7601114900000000 ]
+  mass: 30.973762
+- symbol: P  # 25
+  coordinates: [  0.4473024300000000,  0.5000000000000000,  0.8353561700000000 ]
+  mass: 30.973762
+- symbol: P  # 26
+  coordinates: [  0.5526975700000000,  0.5000000000000000,  0.1646438300000000 ]
+  mass: 30.973762
+electric_total_energy:      -137.8926116600

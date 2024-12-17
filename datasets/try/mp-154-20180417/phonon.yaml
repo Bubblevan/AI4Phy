@@ -1,0 +1,79 @@
+name:      phonon
+type:      phonon
+id:        2166
+status:    done
+directory: phonon
+traverse:  restart
+tasks:
+- name:      equilibrium
+  type:      structopt
+  id:        2167
+  status:    done
+  directory: equilibrium
+  traverse:  restart
+- name:      disp-001
+  type:      electronic_structure
+  id:        14442
+  status:    done
+  directory: disp-001
+  traverse:  restart
+- name:      disp-002
+  type:      electronic_structure
+  id:        14443
+  status:    done
+  directory: disp-002
+  traverse:  restart
+- name:      disp-003
+  type:      electronic_structure
+  id:        14444
+  status:    done
+  directory: disp-003
+  traverse:  restart
+- name:      disp-004
+  type:      electronic_structure
+  id:        14445
+  status:    done
+  directory: disp-004
+  traverse:  restart
+lattice_tolerance: 0.100000
+stress_tolerance: 10.000000
+pressure_target: 0.000000
+force_tolerance: 0.001000
+max_increase: unset
+max_iteration: 20
+min_iteration: 1
+supercell_matrix:
+- [   2,   0,   0 ]
+- [   0,   2,   0 ]
+- [   0,   0,   2 ]
+distance: 0.010000
+lattice:
+- [     5.7863128899999996,     0.0000000000000000,     0.0000000000000000 ] # a
+- [     0.0000000000000000,     5.7863128899999996,     0.0000000000000000 ] # b
+- [     0.0000000000000000,     0.0000000000000000,     5.7863128899999996 ] # c
+points:
+- symbol: N  # 1
+  coordinates: [  0.0555044700000000,  0.0555044700000000,  0.0555044700000000 ]
+  mass: 14.006700
+- symbol: N  # 2
+  coordinates: [  0.4444955300000000,  0.9444955300000000,  0.5555044700000000 ]
+  mass: 14.006700
+- symbol: N  # 3
+  coordinates: [  0.5555044700000000,  0.4444955300000000,  0.9444955300000000 ]
+  mass: 14.006700
+- symbol: N  # 4
+  coordinates: [  0.9444955300000000,  0.5555044700000000,  0.4444955300000000 ]
+  mass: 14.006700
+- symbol: N  # 5
+  coordinates: [  0.9446136700000000,  0.9446136700000000,  0.9446136700000000 ]
+  mass: 14.006700
+- symbol: N  # 6
+  coordinates: [  0.5553863300000000,  0.0553863300000000,  0.4446136700000000 ]
+  mass: 14.006700
+- symbol: N  # 7
+  coordinates: [  0.4446136700000000,  0.5553863300000000,  0.0553863300000000 ]
+  mass: 14.006700
+- symbol: N  # 8
+  coordinates: [  0.0553863300000000,  0.4446136700000000,  0.5553863300000000 ]
+  mass: 14.006700
+electric_total_energy:       -68.2399252200

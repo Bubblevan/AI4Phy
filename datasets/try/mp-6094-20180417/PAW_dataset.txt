@@ -1,0 +1,4 @@
+    <rc><c>  28</c><c>O </c><c>     16.00000000</c><c>      6.00000000</c><c>  PAW_PBE O 08Apr2002                   </c></rc>
+    <rc><c>   4</c><c>Mg</c><c>     24.30500000</c><c>      8.00000000</c><c>  PAW_PBE Mg_pv 13Apr2007               </c></rc>
+    <rc><c>   8</c><c>Si</c><c>     28.08500000</c><c>      4.00000000</c><c>  PAW_PBE Si 05Jan2001                  </c></rc>
+    <rc><c>   8</c><c>Ca</c><c>     40.07800000</c><c>      8.00000000</c><c>  PAW_PBE Ca_pv 06Sep2000               </c></rc>
