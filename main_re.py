@@ -260,7 +260,7 @@ def main(args):
     np.random.seed(args.seed)
     ##############################################################
     # device = 'cpu' # 看完记得改回去
-    device = 'cuda:1' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     ##############################################################
 
     # Print data attributes and dimensions
@@ -329,7 +329,7 @@ def main(args):
         epoch_error = []
         lr_scheduler.step(epoch)
 
-        train_err, train_loss = train_one_epoch_hessian(
+        train_err, train_loss = train_one_epoch_fd(
             model=model, criterion=criterion, 
             data_loader=train_loader, optimizer=optimizer,
             device=device, epoch=epoch, model_ema=model_ema, 

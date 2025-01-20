@@ -116,141 +116,94 @@ def local_hessian(func, inputs, create_graph=False, strict=False, outer_jacobian
                 res.append(inp.detach().requires_grad_(need_graph))
         return tuple(res)
 
-    def _check_requires_grad(inputs, input_type, strict):
-        if not strict:
-            return
-
-        for i, inp in enumerate(inputs):
-            if inp is None:
-                raise RuntimeError(
-                    f"The output of the user-provided function is independent of input {i}."
-                    " This is not allowed in strict mode."
-                )
-            if not inp.requires_grad:
-                if input_type == "hessian":
-                    raise RuntimeError(
-                        f"The hessian of the user-provided function with respect to input {i}"
-                        " is independent of the input. This is not allowed in strict mode."
-                        " You should ensure that your function is thrice differentiable and that"
-                        " the hessian depends on the inputs."
-                    )
-                elif input_type == "jacobian":
-                    raise RuntimeError(
-                        "While computing the hessian, found that the jacobian of the user-provided"
-                        f" function with respect to input {i} is independent of the input. This is not"
-                        " allowed in strict mode. You should ensure that your function is twice"
-                        " differentiable and that the jacobian depends on the inputs (this would be"
-                        " violated by a linear function for example)."
-                    )
-                elif input_type == "grad_inputs":
-                    raise RuntimeError(
-                        f"The gradient with respect to input {i} is independent of the inputs of the"
-                        " user-provided function. This is not allowed in strict mode."
-                    )
-                else:
-                    raise RuntimeError(
-                        f"Output {i} of the user-provided function does not require gradients."
-                        " The outputs must be computed in a differentiable manner from the input"
-                        " when running in strict mode."
-                    )
-
     def ensure_single_output_function(*inp):
         out = func(*inp)
         is_out_tuple, t_out = _as_tuple(out, "outputs of the user-provided function", "hessian")
-        _check_requires_grad(t_out, "outputs", strict=strict)
-
         if is_out_tuple or not isinstance(out, torch.Tensor):
             raise RuntimeError(
                 "The function given to hessian should return a single Tensor"
             )
-
         if out.nelement() != 1:
             raise RuntimeError(
                 "The Tensor returned by the function given to hessian should contain a single element"
             )
-
         return out.squeeze()
 
     def jacobian(func, inputs, create_graph=False, strict=False, strategy="reverse-mode"):
-
         with torch.enable_grad():
             is_inputs_tuple, inputs = _as_tuple(inputs, "inputs", "jacobian")
-            # print(f"[DEBUG] Inputs preprocessed: {inputs}")
-
             inputs = _grad_preprocess(inputs, create_graph=create_graph, need_graph=True)
-
             outputs = func(*inputs)
-            # Safely print outputs information
-            if isinstance(outputs, torch.Tensor):
-                print(f"[DEBUG] Outputs computed: shape={outputs.shape}, dtype={outputs.dtype}")
-            elif isinstance(outputs, tuple):
-                print(f"[DEBUG] Outputs computed: tuple of length {len(outputs)}")
-            else:
-                print(f"[DEBUG] Outputs computed: type={type(outputs)}")
+            is_outputs_tuple, outputs = _as_tuple(outputs, "outputs", "jacobian")
+            jacobian_result = tuple()
 
-            is_outputs_tuple, outputs = _as_tuple(
-                outputs, "outputs of the user-provided function", "jacobian"
-            )
-            _check_requires_grad(outputs, "outputs", strict=strict)
-
-            jacobian = tuple()
-
-            for i, out in enumerate(outputs):
-                jac_i: Tuple[List[torch.Tensor]] = tuple([] for _ in range(len(inputs)))  # type: ignore[assignment]
-                for j in range(out.nelement()):
-                    vj = torch.autograd.grad(
-                        (out.reshape(-1)[j],),
+            for i, output_tensor in enumerate(outputs):
+                grad_matrix = tuple([] for _ in range(len(inputs)))
+                for output_index in range(output_tensor.nelement()):
+                    grad_component = torch.autograd.grad(
+                        (output_tensor.reshape(-1)[output_index],),
                         inputs,
                         retain_graph=True,
                         create_graph=create_graph,
                     )
-                    # Safely log the length of vj
-                    print(f"[DEBUG] Gradient for output {i}, element {j}: length={len(vj)}")
 
-                    for el_idx, (jac_i_el, vj_el, inp_el) in enumerate(
-                        zip(jac_i, vj, inputs)
+                    for idx, (grad_list, grad_value, input_tensor) in enumerate(
+                        zip(grad_matrix, grad_component, inputs)
                     ):
-                        if vj_el is not None:
-                            jac_i_el.append(vj_el)
+                        if grad_value is not None:
+                            grad_list.append(grad_value)
                         else:
-                            jac_i_el.append(torch.zeros_like(inp_el))
+                            grad_list.append(torch.zeros_like(input_tensor))
 
-                jacobian += (
+                jacobian_result += (
                     tuple(
-                        torch.stack(jac_i_el, dim=0).view(
-                            out.size() + inputs[el_idx].size()  # type: ignore[operator]
+                        torch.stack(grad_list, dim=0).view(
+                            output_tensor.size() + inputs[idx].size()
                         )
-                        for (el_idx, jac_i_el) in enumerate(jac_i)
+                        for idx, grad_list in enumerate(grad_matrix)
                     ),
                 )
-            return _tuple_postprocess(jacobian, (is_outputs_tuple, is_inputs_tuple))
+            return _tuple_postprocess(jacobian_result, (is_outputs_tuple, is_inputs_tuple))
 
     def jac_func(*inp):
         inp = tuple(t.requires_grad_(True) for t in inp)
-        print(f"[INFO] Inputs for Jacobian function: count={len(inp)}")
-        jac = jacobian(ensure_single_output_function, inp, create_graph=True)
-        _check_requires_grad(jac, "jacobian", strict=strict)
-        return jac
+        return jacobian(ensure_single_output_function, inp, create_graph=True)
 
     is_inputs_tuple, inputs = _as_tuple(inputs, "inputs", "hessian")
-    print(f"[INFO] Starting Hessian computation for inputs: count={len(inputs)}")
-
-    res = jacobian(
+    result = jacobian(
         jac_func,
         inputs,
         create_graph=create_graph,
         strict=strict,
         strategy=outer_jacobian_strategy,
     )
+    return _tuple_postprocess(result, (is_inputs_tuple, is_inputs_tuple))
 
-    # Safely print result information
-    if isinstance(res, torch.Tensor):
-        print(f"[INFO] Hessian computation completed: shape={res.shape}, dtype={res.dtype}")
-    elif isinstance(res, tuple):
-        print(f"[INFO] Hessian computation completed: tuple of length {len(res)}")
-    else:
-        print(f"[INFO] Hessian computation completed: type={type(res)}")
-    return _tuple_postprocess(res, (is_inputs_tuple, is_inputs_tuple))
+def local_ckpt(model, x):
+    """
+    Compute the Hessian matrix with checkpointing to reduce memory usage.
+
+    Args:
+        model: The model or function to compute the Hessian for.
+        x: The input tensor to the model.
+
+    Returns:
+        The Hessian matrix.
+    """
+    def forward_fn(x):
+        return model(x)
+
+    # Use checkpointing only for the forward computation
+    energy = checkpoint(forward_fn, x)
+
+    # Compute the gradient without checkpointing to avoid incompatibility
+    grad = torch.autograd.grad(energy, x, create_graph=True, retain_graph=True)[0]
+
+    # Compute the Hessian without checkpointing
+    hessian = torch.autograd.functional.hessian(lambda inp: model(inp).sum(), x, create_graph=True)
+
+    return hessian
+
 
 def trace_grad_fn(tensor, visited=None):
     if visited is None:
@@ -296,7 +249,7 @@ def train_one_epoch_dx(
     clip_grad=None,
     print_freq: int = 50, 
     logger=None
-):
+    ):
     # 保存初始模型参数
     before_params = [param.clone().detach() for param in model.parameters()]
 
@@ -322,34 +275,20 @@ def train_one_epoch_dx(
                 n = sample_pos.size(0)
                 logger.info(f"Processing sample with {n} atoms.")
 
-                # 定义前向传播的子函数以供checkpoint使用
-                def forward_pass(batch, f_in, edge_src, edge_dst, pos, edge_num, device):
-                    return model(
-                        batch=batch,
-                        f_in=f_in,
-                        edge_src=edge_src,
-                        edge_dst=edge_dst,
-                        pos=pos,
-                        edge_num=edge_num,
-                        device=device,
-                    ).sum()
-
-                # 使用checkpoint包裹模型的前向传播
-                energy = checkpoint(
-                    forward_pass,
-                    data.batch[sample_mask],
-                    data.x[sample_mask],
-                    data.edge_src,
-                    data.edge_dst,
-                    sample_pos,
-                    data.edge_num,
-                    device
-                )
-                energy = energy.sum()
-
+                # 计算力 (一阶导数)
+                energy = model(
+                    batch=data.batch[sample_mask],
+                    f_in=data.x[sample_mask],
+                    edge_src=data.edge_src,
+                    edge_dst=data.edge_dst,
+                    pos=sample_pos,
+                    edge_num=data.edge_num,
+                    device=device,
+                ).sum()
                 trace_grad_fn(energy)
-                energy.backward(create_graph=True)
-                forces = -sample_pos.grad
+                forces = -torch.autograd.grad(
+                    energy, sample_pos, create_graph=True
+                )[0]
                 logger.info("计算力 (一阶导数)完成")
                 trace_grad_fn(forces)
                 force_constants = torch.zeros(
@@ -428,7 +367,6 @@ def train_one_epoch_dx(
 
     return mae_metric.avg, loss_metric.avg
 
-
 def train_one_epoch_hessian(
     model: torch.nn.Module, 
     criterion: torch.nn.Module,
@@ -460,133 +398,279 @@ def train_one_epoch_hessian(
         break
 
     # 开始 PyTorch Profiler
-    with torch.profiler.profile(
-        activities=[torch.profiler.ProfilerActivity.CPU, torch.profiler.ProfilerActivity.CUDA],
-        record_shapes=True,
-        with_stack=True
-    ) as prof:
+    # with torch.profiler.profile(
+    #     activities=[torch.profiler.ProfilerActivity.CPU, torch.profiler.ProfilerActivity.CUDA],
+    #     record_shapes=True,
+    #     with_stack=True
+    # ) as prof:
         
-        for step, data in enumerate(data_loader):
-            logger.info(f"Processing step {step}/{len(data_loader)}")
-            data = data.to(device)
-            data.pos.requires_grad_(True)
+    for step, data in enumerate(data_loader):
+        logger.info(f"Processing step {step}/{len(data_loader)}")
+        data = data.to(device)
+        data.pos.requires_grad_(True)
 
-            with amp_autocast():
-                print(f"data.batch: {data.batch}")
-                print(f"data.batch.unique(): {data.batch.unique()}")
-                batch_hessians = []
-                for sample_idx in data.batch.unique():
-                    sample_mask = data.batch == sample_idx
-                    sample_pos = data.pos[sample_mask]
-                    sample_pos.requires_grad_(True)
-                    print(f"Sample {sample_idx}: pos.shape = {sample_pos.shape}")
+        with amp_autocast():
+            print(f"data.batch: {data.batch}")
+            print(f"data.batch.unique(): {data.batch.unique()}")
+            batch_hessians = []
+            for sample_idx in data.batch.unique():
+                sample_mask = data.batch == sample_idx
+                sample_pos = data.pos[sample_mask]
+                sample_pos.requires_grad_(True)
+                print(f"Sample {sample_idx}: pos.shape = {sample_pos.shape}")
 
-                    n = sample_pos.size(0)
-                    print(f"逐样本处理的这个样本的原子数为: {n}")
-                    def model_pred(pos):
-                        sample_pred = model(
-                            batch=data.batch[sample_mask],
-                            f_in=data.x[sample_mask],
-                            edge_src=data.edge_src,
-                            edge_dst=data.edge_dst,
-                            pos=pos,
-                            edge_num=data.edge_num,
-                            device=device,
-                        )
-                        return sample_pred.sum()
-
-                    logger.info("Starting Hessian computation using functional API.")
-                    hessian = local_hessian(model_pred, sample_pos, create_graph=True)
-
-                    hessian = hessian.view(n, 3, n, 3).permute(0, 2, 1, 3).contiguous()
-                    hessian = hessian.view(-1, 9)
-
-                    num_samples = 10  # 选择 10 个随机值
-                    indices = torch.randperm(hessian.numel())[:num_samples]
-                    selected_values = hessian.view(-1)[indices]
-                    selected_values_str = "\n".join([f"{value.item():.4e}" for value in selected_values])
-                    logger.info("Sampled Hessian values:\n%s", selected_values_str)
-                    print(f"data.pos.grad: {data.pos.grad}")
-                    print("看看单个样本的hessian的gradfn：")
-                    trace_grad_fn(hessian)
-
-                    batch_hessians.append(hessian)
-
-                hessian_final = torch.cat(batch_hessians, dim=0)
-                hessian_final.requires_grad_(True)
-
-                if hessian_final.shape != data.force_constants_all.shape:
-                    raise ValueError(
-                        f"Dimension mismatch: hessian shape {hessian_final.shape}, "
-                        f"target shape {data.force_constants_all.shape}"
+                n = sample_pos.size(0)
+                print(f"逐样本处理的这个样本的原子数为: {n}")
+                def model_pred(pos):
+                    sample_pred = model(
+                        batch=data.batch[sample_mask],
+                        f_in=data.x[sample_mask],
+                        edge_src=data.edge_src,
+                        edge_dst=data.edge_dst,
+                        pos=pos,
+                        edge_num=data.edge_num,
+                        device=device,
                     )
+                    return sample_pred.sum()
 
-                data.force_constants_all = data.force_constants_all.to(device)
-                data.force_constants_all.requires_grad_(True)
-                print("看看hessian_final的gradfn：")
-                trace_grad_fn(hessian_final)
+                logger.info("Starting Hessian computation using functional API.")
+                hessian = local_ckpt(model_pred, sample_pos)
+                print("Hessian shape before view:", hessian.shape)
 
-                # 计算损失
-                if logger:
-                    logger.info("Computing loss.")
-                loss = criterion(hessian_final, data.force_constants_all).requires_grad_()
-                logger.info(f"loss的值：{loss}")
-                logger.info(f"Loss grad_fn: {loss.grad_fn}, requires_grad: {loss.requires_grad}")
-                trace_grad_fn(loss)
+                # 将 Hessian 从 (3N, 3N) 转换为 (n, 3, n, 3)
+                hessian = hessian.view(n, 3, n, 3).permute(0, 2, 1, 3).contiguous()
+                hessian = hessian.view(-1, 9)
 
-                logger.info("Visualizing computation graph.")
-                # dot = make_dot(loss, params={"data.pos": data.pos})
-                # dot.render(f"computation_graph_step_{step}", format="pdf")        
+                num_samples = 10  # 选择 10 个随机值
+                indices = torch.randperm(hessian.numel())[:num_samples]
+                selected_values = hessian.view(-1)[indices]
+                selected_values_str = "\n".join([f"{value.item():.4e}" for value in selected_values])
+                logger.info("Sampled Hessian values:\n%s", selected_values_str)
+                print(f"data.pos.grad: {data.pos.grad}")
+                print("看看单个样本的hessian的gradfn：")
+                trace_grad_fn(hessian)
 
-            optimizer.zero_grad()
+                batch_hessians.append(hessian)
 
-            if loss_scaler is not None:
-                loss_scaler(loss, optimizer, parameters=model.parameters())
-            else:
-                if logger:
-                    logger.info("Performing backward pass and optimizer step.")
-                loss.backward()
+            hessian_final = torch.cat(batch_hessians, dim=0)
+            hessian_final.requires_grad_(True)
 
-                for name, param in model.named_parameters():
-                    if param.grad is not None:
-                        logger.info(f"{name} gradient norm: {param.grad.norm().item()}")
-
-                if clip_grad is not None:
-                    dispatch_clip_grad(model.parameters(), value=clip_grad, mode='norm')
-
-                optimizer.step()
-
-                del hessian, batch_hessians  # 删除无用的变量
-                torch.cuda.empty_cache()  # 清理显存中的无用缓存
-
-                # 保存更新后的参数
-                after_params = [param.clone().detach() for param in model.parameters()]
-                for idx, (before, after) in enumerate(zip(before_params, after_params)):
-                    if not torch.equal(before, after):
-                        logger.info(f"参数已更新: 参数索引 {idx}")
-                        param_name = list(model.state_dict().keys())[idx]
-                        logger.info(f"更新的参数名称: {param_name}")
-                        break
-                else:
-                    logger.info("参数未更新")
-                before_params = after_params
-
-            # 记录损失和MAE
-            loss_metric.update(loss.item(), n=hessian_final.shape[0])
-            mae_metric.update(
-                torch.mean(torch.abs(hessian_final - data.force_constants_all)).item(), 
-                n=hessian_final.shape[0]
-            )
-
-            if step % print_freq == 0 and logger is not None:
-                logger.info(
-                    f"Epoch [{epoch}], Step [{step}/{len(data_loader)}], "
-                    f"Loss: {loss_metric.avg:.4f}, MAE: {mae_metric.avg:.4f}"
+            if hessian_final.shape != data.force_constants_all.shape:
+                raise ValueError(
+                    f"Dimension mismatch: hessian shape {hessian_final.shape}, "
+                    f"target shape {data.force_constants_all.shape}"
                 )
 
+            data.force_constants_all = data.force_constants_all.to(device)
+            data.force_constants_all.requires_grad_(True)
+            print("看看hessian_final的gradfn：")
+            trace_grad_fn(hessian_final)
+
+            # 计算损失
+            if logger:
+                logger.info("Computing loss.")
+            loss = criterion(hessian_final, data.force_constants_all).requires_grad_()
+            logger.info(f"loss的值：{loss}")
+            logger.info(f"Loss grad_fn: {loss.grad_fn}, requires_grad: {loss.requires_grad}")
+            trace_grad_fn(loss)
+
+            logger.info("Visualizing computation graph.")
+            # dot = make_dot(loss, params={"data.pos": data.pos})
+            # dot.render(f"computation_graph_step_{step}", format="pdf")        
+
+        optimizer.zero_grad()
+
+        if loss_scaler is not None:
+            loss_scaler(loss, optimizer, parameters=model.parameters())
+        else:
+            if logger:
+                logger.info("Performing backward pass and optimizer step.")
+            loss.backward()
+
+            for name, param in model.named_parameters():
+                if param.grad is not None:
+                    logger.info(f"{name} gradient norm: {param.grad.norm().item()}")
+
+            if clip_grad is not None:
+                dispatch_clip_grad(model.parameters(), value=clip_grad, mode='norm')
+
+            optimizer.step()
+
+            del hessian, batch_hessians  # 删除无用的变量
+            torch.cuda.empty_cache()  # 清理显存中的无用缓存
+
+            # 保存更新后的参数
+            after_params = [param.clone().detach() for param in model.parameters()]
+            for idx, (before, after) in enumerate(zip(before_params, after_params)):
+                if not torch.equal(before, after):
+                    logger.info(f"参数已更新: 参数索引 {idx}")
+                    param_name = list(model.state_dict().keys())[idx]
+                    logger.info(f"更新的参数名称: {param_name}")
+                    break
+            else:
+                logger.info("参数未更新")
+            before_params = after_params
+
+        # 记录损失和MAE
+        loss_metric.update(loss.item(), n=hessian_final.shape[0])
+        mae_metric.update(
+            torch.mean(torch.abs(hessian_final - data.force_constants_all)).item(), 
+            n=hessian_final.shape[0]
+        )
+
+        if step % print_freq == 0 and logger is not None:
+            logger.info(
+                f"Epoch [{epoch}], Step [{step}/{len(data_loader)}], "
+                f"Loss: {loss_metric.avg:.4f}, MAE: {mae_metric.avg:.4f}"
+            )
+
     # 打印训练过程的性能分析结果
-    prof.export_chrome_trace(f"trace_epoch_{epoch}.json")
-    prof.key_averages().table(sort_by="self_cpu_time_total")
+    # prof.export_chrome_trace(f"trace_epoch_{epoch}.json")
+    # prof.key_averages().table(sort_by="self_cpu_time_total")
+
+    return mae_metric.avg, loss_metric.avg
+
+def compute_hessian_finite_difference(model, data, epsilon=1e-6, device='cuda', threshold=10):
+    n_atoms = data.pos.size(0)
+    n_coords = n_atoms * 3
+    hessian = torch.zeros((n_coords, n_coords), device=device)
+
+    def energy_func(pos):
+        pos = pos.view_as(data.pos)
+        pred = model(
+            batch=data.batch,
+            f_in=data.x,
+            edge_src=data.edge_src,
+            edge_dst=data.edge_dst,
+            pos=pos,
+            edge_num=data.edge_num,
+            device=device,
+        )
+        return pred.sum()  # 保留计算图
+
+    for i in range(n_coords):
+        for j in range(i, n_coords):  # 对称性优化
+            if abs(i - j) > threshold:  # 混合方法：限制非对角元素
+                continue
+
+            # 生成扰动位置
+            pos_pp = data.pos.clone()
+            pos_pm = data.pos.clone()
+            pos_mp = data.pos.clone()
+            pos_mm = data.pos.clone()
+
+            pos_pp.view(-1)[i] += epsilon
+            pos_pp.view(-1)[j] += epsilon
+            pos_pm.view(-1)[i] += epsilon
+            pos_pm.view(-1)[j] -= epsilon
+            pos_mp.view(-1)[i] -= epsilon
+            pos_mp.view(-1)[j] += epsilon
+            pos_mm.view(-1)[i] -= epsilon
+            pos_mm.view(-1)[j] -= epsilon
+
+
+            # 分别计算能量，保留计算图
+            energy_pp = energy_func(pos_pp)
+            print(f"计算图占用显存：{torch.cuda.memory_allocated() / 1024**2}")
+            energy_pm = energy_func(pos_pm)
+            print(f"计算图占用显存：{torch.cuda.memory_allocated() / 1024**2}")
+            energy_mp = energy_func(pos_mp)
+            print(f"计算图占用显存：{torch.cuda.memory_allocated() / 1024**2}")
+            energy_mm = energy_func(pos_mm)
+            print(f"计算图占用显存：{torch.cuda.memory_allocated() / 1024**2}")
+
+            # 二阶导数公式
+            second_derivative = (
+                energy_pp - energy_pm - energy_mp + energy_mm
+            ) / (4 * epsilon**2)
+
+            hessian[i, j] = second_derivative
+            if i != j:
+                hessian[j, i] = second_derivative  # 对称性优化
+            print(f"结束循环{i}.{j}")
+
+    return hessian
+
+
+def train_one_epoch_fd(
+    model: torch.nn.Module, 
+    criterion: torch.nn.Module,
+    data_loader: Iterable, 
+    optimizer: torch.optim.Optimizer,
+    device: torch.device, 
+    epoch: int, 
+    model_ema: Optional[ModelEma] = None,  
+    amp_autocast=None,
+    loss_scaler=None,
+    clip_grad=None,
+    print_freq: int = 50, 
+    logger=None
+):
+    model.train()
+    criterion.train()
+    loss_metric = AverageMeter()
+    mae_metric = AverageMeter()
+
+    for step, data in enumerate(data_loader):
+        logger.info(f"Processing step {step}/{len(data_loader)}")
+        data = data.to(device)
+        data.pos.requires_grad_(True)
+
+        with amp_autocast():
+            logger.info("Starting Hessian computation using finite differences.")
+            batch_hessians = []
+
+            for sample_idx in data.batch.unique():
+                sample_mask = data.batch == sample_idx
+                sample_pos = data.pos[sample_mask]
+
+                logger.info(f"Sample {sample_idx}: pos.shape = {sample_pos.shape}")
+                hessian = compute_hessian_finite_difference(model, data, epsilon=1e-6, device=device)
+
+                # Reshape Hessian
+                n = sample_pos.size(0)
+                hessian = hessian.view(n, 3, n, 3).permute(0, 2, 1, 3).contiguous()
+                hessian = hessian.view(-1, 9)
+                batch_hessians.append(hessian)
+
+            hessian_final = torch.cat(batch_hessians, dim=0)
+
+            # 检查维度匹配
+            if hessian_final.shape != data.force_constants_all.shape:
+                raise ValueError(
+                    f"Dimension mismatch: hessian shape {hessian_final.shape}, "
+                    f"target shape {data.force_constants_all.shape}"
+                )
+
+            data.force_constants_all = data.force_constants_all.to(device)
+
+            # 计算损失
+            loss = criterion(hessian_final, data.force_constants_all)
+
+        optimizer.zero_grad()
+
+        if loss_scaler is not None:
+            loss_scaler(loss, optimizer, parameters=model.parameters())
+        else:
+            loss.backward()
+            optimizer.step()
+
+        # 清理显存
+        del hessian, batch_hessians
+        torch.cuda.empty_cache()
+
+        # 更新指标
+        loss_metric.update(loss.item(), n=hessian_final.shape[0])
+        mae_metric.update(
+            torch.mean(torch.abs(hessian_final - data.force_constants_all)).item(), 
+            n=hessian_final.shape[0]
+        )
+
+        if step % print_freq == 0 and logger is not None:
+            logger.info(
+                f"Epoch [{epoch}], Step [{step}/{len(data_loader)}], "
+                f"Loss: {loss_metric.avg:.4f}, MAE: {mae_metric.avg:.4f}"
+            )
 
     return mae_metric.avg, loss_metric.avg
 
