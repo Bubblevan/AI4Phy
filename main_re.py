@@ -329,7 +329,7 @@ def main(args):
         epoch_error = []
         lr_scheduler.step(epoch)
 
-        train_err, train_loss = train_one_epoch_fd(
+        train_err, train_loss = train_one_epoch_hessian(
             model=model, criterion=criterion, 
             data_loader=train_loader, optimizer=optimizer,
             device=device, epoch=epoch, model_ema=model_ema, 
