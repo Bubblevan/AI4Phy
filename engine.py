@@ -22,6 +22,9 @@ import random
 
 ModelEma = ModelEmaV2
 
+# 全局标志位
+# flag = 0
+
 class AverageMeter:
     """Computes and stores the average and current value"""
     def __init__(self):
@@ -241,7 +244,9 @@ def train_one_epoch_dx(
 
     return mae_metric.avg, loss_metric.avg
 
-def local_hessian(func, inputs, create_graph=True, strict=False, outer_jacobian_strategy="reverse-mode"):
+
+
+def local_hessian(func, inputs, row_indices=None, create_graph=True, strict=False, outer_jacobian_strategy="reverse-mode"):
     def _as_tuple(inp, arg_name=None, fn_name=None):
         is_inp_tuple = True
         if not isinstance(inp, tuple):
@@ -293,7 +298,8 @@ def local_hessian(func, inputs, create_graph=True, strict=False, outer_jacobian_
             )
         return out.squeeze()
 
-    def jacobian(func, inputs, create_graph=False, strict=False, strategy="reverse-mode"):
+    def jacobian(func, inputs, create_graph=False, strict=False, strategy="reverse-mode", output_indices=None):
+        """计算函数输出的Jacobian矩阵，支持仅计算指定输出元素的梯度"""
         with torch.enable_grad():
             is_inputs_tuple, inputs = _as_tuple(inputs, "inputs", "jacobian")
             inputs = _grad_preprocess(inputs, create_graph=create_graph, need_graph=True)
@@ -303,34 +309,45 @@ def local_hessian(func, inputs, create_graph=True, strict=False, outer_jacobian_
 
             for i, output_tensor in enumerate(outputs):
                 grad_matrix = tuple([] for _ in range(len(inputs)))
-                for output_index in range(output_tensor.nelement()):
-                    # 仅在非最后一次计算时保留计算图
-                    retain_graph = create_graph or (output_index < output_tensor.nelement() - 1)
+
+                # 确定需要处理的输出元素索引
+                if output_indices is None:
+                    indices = range(output_tensor.nelement())
+                else:
+                    indices = output_indices.tolist() if isinstance(output_indices, torch.Tensor) else output_indices
+
+                for idx, output_index in enumerate(indices):
+                    retain_graph = create_graph or (idx < len(indices)-1)
                     grad_component = torch.autograd.grad(
-                        (output_tensor.reshape(-1)[output_index],),
-                        inputs,
+                        outputs=output_tensor.reshape(-1)[output_index],
+                        inputs=inputs,
                         retain_graph=retain_graph,
                         create_graph=create_graph,
+                        allow_unused=not strict,
                     )
 
-                    for idx, (grad_list, grad_value, input_tensor) in enumerate(
-                        zip(grad_matrix, grad_component, inputs)
-                    ):
+                    for grad_idx, (grad_list, grad_value, input_tensor) in enumerate(zip(grad_matrix, grad_component, inputs)):
                         if grad_value is not None:
                             grad_list.append(grad_value)
                         else:
                             grad_list.append(torch.zeros_like(input_tensor))
+                # print(f"output_tensor.size(): {output_tensor.size()}")
+                # print(f"grad_list length: {len(grad_list)}")
+                # print(f"grad_list[0].size(): {grad_list[0].size()}")
+                # print(f"inputs[0].size(): {inputs[0].size()}")
 
+                # 修正重塑逻辑
                 jacobian_result += (
                     tuple(
                         torch.stack(grad_list, dim=0).view(
-                            output_tensor.size() + inputs[idx].size()
+                            len(grad_list), *grad_list[0].size()
                         )
-                        for idx, grad_list in enumerate(grad_matrix)
+                        for g_idx, grad_list in enumerate(grad_matrix)
                     ),
                 )
             return _tuple_postprocess(jacobian_result, (is_outputs_tuple, is_inputs_tuple))
 
+    """计算函数输出的Hessian矩阵，支持仅计算指定行索引的部分矩阵"""
     def jac_func(*inp):
         inp = tuple(t.requires_grad_(True) for t in inp)
         return jacobian(ensure_single_output_function, inp, create_graph=True)
@@ -342,8 +359,10 @@ def local_hessian(func, inputs, create_graph=True, strict=False, outer_jacobian_
         create_graph=create_graph,
         strict=strict,
         strategy=outer_jacobian_strategy,
+        output_indices=row_indices  # 传入行索引控制计算范围
     )
     return _tuple_postprocess(result, (is_inputs_tuple, is_inputs_tuple))
+
 
 def train_one_epoch_hessian(
     model: torch.nn.Module, 
@@ -358,7 +377,7 @@ def train_one_epoch_hessian(
     clip_grad=None,
     print_freq: int = 50, 
     logger=None,
-    mini_batch_size: int = 1  # 新增参数，控制每个 mini-batch 的原子对数量
+    mini_batch_size: int = 6  # 新增参数，控制每个 mini-batch 的原子对数量
 ):
     # 保存初始模型参数
     before_params = [param.clone().detach() for param in model.parameters()]
@@ -368,14 +387,7 @@ def train_one_epoch_hessian(
 
     loss_metric = AverageMeter()
     mae_metric = AverageMeter()
-    print("Inspecting data_loader contents:")
-    for idx, batch in enumerate(data_loader):
-        print(f"Batch {idx}:")
-        print(f"  Batch data.batch.unique() = {batch.batch.unique()}")
-        print(f"  Batch pos.shape = {batch.pos.shape}")
-        # if idx >= 2:  # 仅打印前三个 batch，避免过多输出
-        break
-        
+
     for step, data in enumerate(data_loader):
         logger.info(f"Processing step {step}/{len(data_loader)}")
         data = data.to(device)
@@ -385,11 +397,13 @@ def train_one_epoch_hessian(
             for sample_idx in data.batch.unique():
                 sample_mask = data.batch == sample_idx
                 sample_pos = data.pos[sample_mask].detach().requires_grad_(True)
-
                 print(f"Sample {sample_idx}: pos.shape = {sample_pos.shape}")
 
-                n = sample_pos.size(0)
+                n = sample_pos.size(0)  # 当前超胞的原子总数
+                if n > 96: mini_batch_size = 4
+                else: mini_batch_size = 6
                 print(f"逐样本处理的这个样本的原子数为: {n}")
+
                 def model_pred(pos):
                     sample_pred = model(
                         batch=data.batch[sample_mask],
@@ -404,32 +418,57 @@ def train_one_epoch_hessian(
 
                 flag = 0
                 while flag * mini_batch_size < n:
-                    start_index = flag * mini_batch_size
-                    end_index = min((flag + 1) * mini_batch_size, n)
+                    # 判断是否需要分批次
+                    if mini_batch_size >= n:
+                        # 直接处理整个超胞
+                        start_index = 0
+                        end_index = n
+                        row_indices = torch.arange(n * n).to(device)  # 整个超胞的索引
+                        flag += 1  # 确保循环只运行一次
+                    else:
+                        # 按 mini_batch_size 分批处理
+                        start_index = flag * mini_batch_size
+                        end_index = min((flag + 1) * mini_batch_size, n)
+
+                        # 生成当前批次的原子索引
+                        batch_atom_indices = torch.arange(start_index, end_index)
+                        row_indices = []
+                        for atom_idx in batch_atom_indices:
+                            row_indices.extend([3*atom_idx, 3*atom_idx+1, 3*atom_idx+2])
+                        row_indices = torch.tensor(row_indices).to(device)
+                        print(f"Row indices shape: {row_indices.shape}, values: {row_indices}")
+
+                        flag += 1
 
                     logger.info(f"Sample {sample_idx}: Processing atoms from {start_index} to {end_index}")
 
                     # 重新计算当前批次对应的 Hessian 矩阵
-                    hessian = local_hessian(model_pred, sample_pos)
-                    hessian = hessian.view(n, 3, n, 3).permute(0, 2, 1, 3).contiguous()
-                    hessian = hessian.view(-1, 9)
+                    hessian = local_hessian(model_pred, sample_pos, row_indices=row_indices)
+                    print(f"原始Hessian形状: {hessian.shape}")
+                    hessian = hessian.view(len(batch_atom_indices), n, 3, 3)  # (k, n, 3, 3)
+                    hessian = hessian.contiguous().view(-1, 9)  # (k*n, 9)
+                    print(f"ATTENTION hessian shape: {hessian.shape}")
 
                     # 截取当前批次的 Hessian 矩阵
-                    hessian_batch = hessian[start_index * n:(end_index * n), :]
+                    batch_pair_indices = torch.cat([
+                        torch.arange(i*n, (i+1)*n) 
+                        for i in batch_atom_indices
+                    ]).to(device) # 0~23
+                    print(batch_pair_indices) # 0~2
+                    # hessian_batch = hessian[batch_pair_indices]
+                    hessian_batch = hessian
+                    print(f"hessian_batch: {hessian_batch.shape}")
 
-                    # 计算当前处理的原子在整个力常数矩阵中的行索引
-                    row_indices = torch.arange(start_index, end_index) * n + torch.arange(n).repeat(end_index - start_index)
                     # 从力常数矩阵中截取所需的行
-                    selected_force_constants_all = data.force_constants_all[row_indices].view(-1, 9)
-
+                    selected_force_constants_all = data.force_constants_all[batch_pair_indices].view(-1, 9).to(device)
+                    print(f"data.force_constants_all: {data.force_constants_all.shape}")
+                    print(f"selected_force_constants_all: {selected_force_constants_all.shape}")
                     # 检查维度匹配
                     if hessian_batch.shape != selected_force_constants_all.shape:
                         raise ValueError(
                             f"Dimension mismatch: hessian shape {hessian_batch.shape}, "
                             f"target shape {selected_force_constants_all.shape}"
                         )
-
-                    selected_force_constants_all = selected_force_constants_all.to(device)
 
                     # 计算损失
                     if logger:
@@ -448,12 +487,13 @@ def train_one_epoch_hessian(
                             logger.info("Performing backward pass and optimizer step.")
                         loss.backward()
 
-                        for name, param in model.named_parameters():
-                            if param.grad is not None:
-                                logger.info(f"{name} gradient norm: {param.grad.norm().item()}")
+                        # 打印梯度的，旧时代代码
+                        # for name, param in model.named_parameters():
+                        #     if param.grad is not None:
+                        #         logger.info(f"{name} gradient norm: {param.grad.norm().item()}")
 
-                        if clip_grad is not None:
-                            dispatch_clip_grad(model.parameters(), value=clip_grad, mode='norm')
+                        # if clip_grad is not None:
+                        #     dispatch_clip_grad(model.parameters(), value=clip_grad, mode='norm')
 
                         optimizer.step()
 
@@ -471,7 +511,6 @@ def train_one_epoch_hessian(
                             f"Loss: {loss_metric.avg:.4f}, MAE: {mae_metric.avg:.4f}"
                         )
 
-                    flag += 1
                     # 清理显存
                     del hessian, hessian_batch
                     torch.cuda.empty_cache()
@@ -480,9 +519,9 @@ def train_one_epoch_hessian(
         after_params = [param.clone().detach() for param in model.parameters()]
         for idx, (before, after) in enumerate(zip(before_params, after_params)):
             if not torch.equal(before, after):
-                logger.info(f"参数已更新: 参数索引 {idx}")
+                # logger.info(f"参数已更新: 参数索引 {idx}")
                 param_name = list(model.state_dict().keys())[idx]
-                logger.info(f"更新的参数名称: {param_name}")
+                # logger.info(f"更新的参数名称: {param_name}")
                 break
         else:
             logger.info("参数未更新")
@@ -490,8 +529,6 @@ def train_one_epoch_hessian(
 
     return mae_metric.avg, loss_metric.avg
 
-# 全局标志位
-flag = 0
 
 def compute_hessian_finite_difference(model, data, start_index, end_index, epsilon=1e-6, device='cuda', threshold=10):
     n_atoms = data.pos.size(0)
